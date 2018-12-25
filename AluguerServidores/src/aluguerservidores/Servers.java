@@ -4,7 +4,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Random;
 
-public class Servers {
+public class Servers  extends Thread{
     String id;
     String type;
     float nominal_price;
@@ -12,15 +12,15 @@ public class Servers {
     float minutes;
     boolean ocupied;
     boolean auctioned;
-    aluguerservidores.Account user;
+    private String user_email;
 
-    public Servers (String type, float n_price, float i_price, boolean auct, aluguerservidores.Account user ) throws NoSuchAlgorithmException {
+    public Servers (String type, float n_price, float i_price, boolean auct, String user ) throws NoSuchAlgorithmException {
         this.id=this.create_id();
         this.type=type;
         this.nominal_price= n_price;
         this.indic_price = i_price;
         this.minutes=0;
-        this.user=user;
+        this.user_email =user;
         this.ocupied=true;
         this.auctioned=auct;
     }
@@ -42,6 +42,10 @@ public class Servers {
         return this.minutes;
     }
 
+    public synchronized void setUser_email(String x){this.user_email=x;}
+    public synchronized String getUser_email(){ return this.user_email;}
+
+    public synchronized void inc_minutes(){ this.minutes++;}
     public synchronized void set_type(String type){
         this.type=type;
     }
@@ -90,4 +94,17 @@ public class Servers {
     }
 
     public synchronized Servers clone(){return this.clone();}
+
+    public void run() {
+        while(get_ocupied()==true){
+            try {
+                sleep(60000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (get_ocupied()== true){
+                inc_minutes();
+            }
+        }
+    }
 }

@@ -98,21 +98,25 @@ public class Server {
                 return 0;
             }
         }
-        
-        //TODO
+
         private int mainPage() throws IOException {
             int status=0;
             String answer= "";
             while(status == 0) {
-                this.sendMessage("1 - Listar Catalogo \n2 - Pedir servidor \n3 - Listar Leilões \n4 - Ir para Leilão \n5 - Para Sair");
+                this.sendMessage("1 - Listar Catalogo \n2 - Pedir servidor \n3 - Libertar servidor \n4 - Listar Leilões \n5 - Ir para Leilão \n6 - Para Sair");
                 answer = input.readLine();
                 switch (answer) {
                     case "1":
                         this.sendMessage(this.list_catalogue());
                         break;
-                    case "2": break;
-                    case "3": break;
+                    case "2":
+                        this.sendMessage(this.request_Server());
+                        break;
+                    case "3":
+                        this.sendMessage(this.liberate_Server());
+                        break;
                     case "4": break;
+                    case "5": break;
                     default:
                         status=1;
                         break;
@@ -129,6 +133,58 @@ public class Server {
                 response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String (String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String (String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String (String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String (String.valueOf(server.get_auctioned()))) + "\n\n";
             }
             return response;
+        }
+
+        private String request_Server() throws IOException {
+            this.sendMessage("Por favor indique o id do servidor que deseja requisitar!\n");
+            String answer = input.readLine();
+            this.sendMessage("Por favor indique o seu email!\n");
+            String u_email = input.readLine();
+            if (catalogue.server_catalogue.containsKey(answer)){
+                Servers  s_requested= catalogue.server_catalogue.get(answer);
+                if (s_requested.get_ocupied()== false){
+                    s_requested.set_ocupied(true);
+                    s_requested.setUser_email(u_email);
+                    s_requested.start();
+                    return "Este é o identificador da reserva: " +answer;
+                }
+                else {
+                    if (s_requested.get_auctioned() == true) {
+                        s_requested.set_minutes(0);
+                        s_requested.setUser_email(u_email);
+                        return "Este é o identificador da reserva: " + answer;
+                    } else {
+                        return "O servidor mencionado está ocupado!\n";
+                    }
+                }
+            } else{ return "O servidor mencionado não existe!\n";     }
+        }
+
+        private String liberate_Server() throws IOException {
+            float total_pay=0;
+            this.sendMessage("Por favor indique o identificador da reserva!\n");
+            String answer = input.readLine();
+            this.sendMessage("Por favor indique o seu email!\n");
+            String u_email = input.readLine();
+            if (catalogue.server_catalogue.containsKey(answer)){
+                Servers  s_requested= catalogue.server_catalogue.get(answer);
+
+                if (s_requested.getUser_email().equals(u_email)){
+                    s_requested.set_ocupied(false);
+                    if (s_requested.get_auctioned()== true){
+                        total_pay = s_requested.getIndic_price()*s_requested.get_minutes();
+                        s_requested.setUser_email("");
+                        s_requested.set_minutes(0);
+                        return "O servidor foi libertado com sucesso! Teria de pagar " + Float.toString(total_pay) + " mas desta vez fica por conta da casa ;D \n";
+                    }else{
+                        total_pay = s_requested.getNominal_price()*s_requested.get_minutes();
+                        s_requested.setUser_email("");
+                        s_requested.set_minutes(0);
+                        return "O servidor foi libertado com sucesso! Teria de pagar " + Float.toString(total_pay) + " mas desta vez fica por conta da casa ;D \n";
+                    }
+                }
+                else{ return "O servidor mencionado já não está associado a si!\n"; }
+            } else{ return "A transação mencionada não existe!\n";     }
         }
 
         private int loginPrompt() {
