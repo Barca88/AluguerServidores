@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
@@ -34,19 +35,19 @@ public class Server {
     private ArrayList<ServerThread> clients;
     private AccountsMap accounts;
     private EmailList loggedIn;
-    private ServerList Servers;
+    private Catalogue catalogue;
     private Lock accountsLock;
 
-    public Server() throws IOException {
+    public Server() throws IOException, NoSuchAlgorithmException {
         this.serverSocket = new ServerSocket(12345);
         this.clients = new ArrayList<>();
         this.accounts = new AccountsMap();
         this.accountsLock = new ReentrantLock();
         this.loggedIn = new EmailList();
-        this.Servers = new ServerList();
+        this.catalogue = new Catalogue();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
         Server servidor = new Server();
         servidor.getInput();
     }
@@ -63,14 +64,11 @@ public class Server {
     //Thread para cada cliente
     private class ServerThread extends Thread {
 
-        private Socket clSocket;
         private BufferedWriter output;
         private BufferedReader input;
-        private Account user;
 
         private ServerThread(Socket clSocket) {
             try {
-                this.clSocket = clSocket;
                 input = new BufferedReader(new InputStreamReader(clSocket.getInputStream()));
                 output = new BufferedWriter(new OutputStreamWriter(clSocket.getOutputStream()));
             } catch (IOException ex) {
@@ -102,7 +100,35 @@ public class Server {
         }
         
         //TODO
-        private int mainPage(){
+        private int mainPage() throws IOException {
+            int status=0;
+            String answer= "";
+            while(status == 0) {
+                this.sendMessage("1 - Listar Catalogo \n2 - Pedir servidor \n3 - Listar Leilões \n4 - Ir para Leilão \n5 - Para Sair");
+                answer = input.readLine();
+                switch (answer) {
+                    case "1":
+                        this.sendMessage(this.list_catalogue());
+                        break;
+                    case "2": break;
+                    case "3": break;
+                    case "4": break;
+                    default:
+                        status=1;
+                        break;
+                }
+
+            }
+            return 0;
+        }
+
+        private String list_catalogue(){
+            String response = "";
+            ArrayList <Servers>  catalogue_list =  new ArrayList<>(catalogue.server_catalogue.values());
+            for (Servers server: catalogue_list) {
+                response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String (String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String (String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String (String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String (String.valueOf(server.get_auctioned()))) + "\n\n";
+            }
+            return response;
         }
 
         private int loginPrompt() {
@@ -185,7 +211,8 @@ public class Server {
                     phase = this.startMenu();
                 }
                 while(phase == 1){
-                   sendMessage("Está dentro do sistema!");
+                    sendMessage("Está dentro do sistema!");
+                    phase = this.mainPage();
                    break;
                 }
                 sendMessage("end");
