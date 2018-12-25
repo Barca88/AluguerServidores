@@ -11,11 +11,11 @@ import java.util.ArrayList;
  *
  * @author quim
  */
-public class emailList {
+public class EmailList {
 
     private ArrayList<String> list;
 
-    public emailList() {
+    public EmailList() {
         this.list = new ArrayList<>();
     }
 

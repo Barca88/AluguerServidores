@@ -33,7 +33,8 @@ public class Server {
     private final ServerSocket serverSocket;
     private ArrayList<ServerThread> clients;
     private AccountsMap accounts;
-    private emailList loggedIn;
+    private EmailList loggedIn;
+    private ServerList Servers;
     private Lock accountsLock;
 
     public Server() throws IOException {
@@ -41,7 +42,8 @@ public class Server {
         this.clients = new ArrayList<>();
         this.accounts = new AccountsMap();
         this.accountsLock = new ReentrantLock();
-        this.loggedIn = new emailList();
+        this.loggedIn = new EmailList();
+        this.Servers = new ServerList();
     }
 
     public static void main(String[] args) throws IOException {
@@ -97,6 +99,10 @@ public class Server {
             } else {
                 return 0;
             }
+        }
+        
+        //TODO
+        private int mainPage(){
         }
 
         private int loginPrompt() {

@@ -21,7 +21,6 @@ public class AccountsMap {
 
     public synchronized boolean isAccountEmail(String email) {
         return accounts.containsKey(email);
-
     }
 
     public synchronized void addAccount(Account account) {
