@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package aluguerservidores;
 
 import java.io.BufferedReader;
@@ -20,15 +15,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-/**
- *
- * @author quim
- */
 public class Server {
 
     private final ServerSocket serverSocket;
@@ -126,12 +112,65 @@ public class Server {
             return 0;
         }
 
-        private String list_catalogue(){
+        private String list_catalogue() throws IOException {
+            this.sendMessage("1 - Listar todos os servidores \n2 - Listar servidores ocupados \n3 - Listas servidores leiloados \n4- Listar todos os servidores não reservados e leiloados \n5 - Listar servidores reservados por mim \n6 - Listar todos os servidores do tipo \"large.5k\" \n7 - Listar todos os servidores do tipo \"small.1k\"\n 8- \"Para sair\"\n ");
+            String answer = input.readLine();
             String response = "";
             ArrayList <Servers>  catalogue_list =  new ArrayList<>(catalogue.server_catalogue.values());
-            for (Servers server: catalogue_list) {
-                response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String (String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String (String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String (String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String (String.valueOf(server.get_auctioned()))) + "\n\n";
+            switch (answer){
+                case "1":
+                    for (Servers server: catalogue_list) {
+                        response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String (String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String (String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String (String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String (String.valueOf(server.get_auctioned()))) + "\n\n";
+                    }
+                    break;
+                case "2":
+                    for (Servers server: catalogue_list) {
+                        if (server.get_ocupied() == true) {
+                            response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String(String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String(String.valueOf(server.get_auctioned()))) + "\n\n";
+                        }
+                    }
+                    break;
+                case "3":
+                    for (Servers server: catalogue_list) {
+                        if (server.get_auctioned() == true) {
+                            response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String(String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String(String.valueOf(server.get_auctioned()))) + "\n\n";
+                        }
+                    }
+                    break;
+                case "4":
+                    for (Servers server: catalogue_list) {
+                        if (server.get_auctioned() == false & server.get_ocupied()==false ) {
+                            response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String(String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String(String.valueOf(server.get_auctioned()))) + "\n\n";
+                        }
+                    }
+                    break;
+                case "5":
+                    this.sendMessage("Por favor indique o seu email!\n");
+                    String u_email = input.readLine();
+                    for (Servers server: catalogue_list) {
+                        if (server.getUser_email().equals(u_email)) {
+                            response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String(String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String(String.valueOf(server.get_auctioned()))) + "\n\n";
+                        }
+                    }
+                    break;
+                case "6":
+                    for (Servers server: catalogue_list) {
+                        if (server.get_type().equals("large.5k")) {
+                            response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String(String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String(String.valueOf(server.get_auctioned()))) + "\n\n";
+                        }
+                    }
+                    break;
+                case "7":
+                    for (Servers server: catalogue_list) {
+                        if (server.get_type().equals("small.1k")) {
+                            response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String(String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String(String.valueOf(server.get_auctioned()))) + "\n\n";
+                        }
+                    }
+                    break;
+                default: break;
             }
+
+
             return response;
         }
 
@@ -271,9 +310,10 @@ public class Server {
                     phase = this.mainPage();
                    break;
                 }
-                sendMessage("end");
+                sendMessage("Bye!");
             } catch (Exception e) {
                 System.out.println("ups... ocorreu um erro, sei lá qual");
+                System.out.println(e);
             }
         }
     }

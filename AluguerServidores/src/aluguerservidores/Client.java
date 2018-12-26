@@ -40,32 +40,30 @@ public class Client {
 
     public void getInputsDoThings() throws IOException {
 
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    while (true) {
-                        String respostaSocket = input.readLine();
-                        if(respostaSocket.equals("doLogout")){
-                            closeSocket();
-                            break;
-                        }
-                        
-                        if(respostaSocket != null && !respostaSocket.equals("")) System.out.println(respostaSocket);
+        new Thread(() -> {
+            try {
+                String respostaSocket = new String();
+                while (respostaSocket.equals("Bye!") == false) {
+                    respostaSocket = input.readLine();
+                    if(respostaSocket.equals("doLogout")){
+                        closeSocket();
+                        break;
                     }
-                } catch (IOException ex) {}
-            }
-        }.start();
+
+                    if(respostaSocket != null && !respostaSocket.equals("")) System.out.println(respostaSocket);
+                }
+            } catch (IOException ex) {}
+        }).start();
 
         while (work) {
 
             String clientText = read.nextLine();
-            
+
             if (clientText.equalsIgnoreCase("exit")) {
                 closeSocket();
                 break;
             }
-            
+
             try{
             output.write(clientText);
             output.newLine();
@@ -82,5 +80,5 @@ public class Client {
         this.socket.shutdownOutput();
         this.socket.close();
         this.work = false;
-    }    
+    }
 }

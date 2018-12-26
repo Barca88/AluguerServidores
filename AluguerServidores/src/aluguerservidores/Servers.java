@@ -6,12 +6,12 @@ import java.util.Random;
 
 public class Servers  extends Thread{
     String id;
-    String type;
-    float nominal_price;
+    private String type;
+    private float nominal_price;
     private float indic_price;
-    float minutes;
-    boolean ocupied;
-    boolean auctioned;
+    private float minutes;
+    private boolean ocupied;
+    private boolean auctioned;
     private String user_email;
 
     public Servers (String type, float n_price, float i_price, boolean auct, String user ) throws NoSuchAlgorithmException {
@@ -33,6 +33,7 @@ public class Servers  extends Thread{
         this.minutes=0;
         this.ocupied=false;
         this.auctioned=false;
+        this.user_email="";
     }
 
     public synchronized void set_minutes(float m){
