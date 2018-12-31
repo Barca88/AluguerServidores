@@ -40,10 +40,16 @@ public class Server {
 
     private void getInput() throws IOException {
         while (true) {
+            try{
             Socket clSocket = serverSocket.accept();
             ServerThread st = new ServerThread(clSocket);
             this.clients.add(st);
             st.start();
+            System.out.println("Thread " + st.getId() + "started\n");
+            st.join();
+            System.out.println("Thread " + st.getId() + "finished\n");
+            }
+            catch(Exception e){}
         }
     }
 
@@ -52,6 +58,7 @@ public class Server {
 
         private BufferedWriter output;
         private BufferedReader input;
+        public String myEmail;
 
         private ServerThread(Socket clSocket) {
             try {
@@ -74,7 +81,9 @@ public class Server {
         private int startMenu() throws IOException {
             this.sendMessage("1 - Login \n2 - Registar");
             String answer = input.readLine();
-            if (answer.equals("2")) {
+            if (answer.equalsIgnoreCase("quit")) {
+                return -1;
+            } else if (answer.equals("2")) {
                 int singupResult = signupPrompt();
                 return singupResult;
             } else if (answer.equals("1")) {
@@ -86,10 +95,10 @@ public class Server {
         }
 
         private int mainPage() throws IOException {
-            int status=0;
-            String answer= "";
-            while(status == 0) {
-                this.sendMessage("1 - Listar Catalogo \n2 - Pedir servidor \n3 - Libertar servidor \n4 - Listar Leilões \n5 - Ir para Leilão \n6 - Para Sair");
+            int status = 0;
+            String answer = "";
+            while (status == 0) {
+                this.sendMessage("1 - Listar Catalogo \n2 - Pedir servidor \n3 - Libertar servidor \n4 - Listar Leilões \n5 - Ir para Leilão \n6 - Log Out");
                 answer = input.readLine();
                 switch (answer) {
                     case "1":
@@ -101,10 +110,15 @@ public class Server {
                     case "3":
                         this.sendMessage(this.liberate_Server());
                         break;
-                    case "4": break;
-                    case "5": break;
+                    case "4":
+                        break;
+                    case "5":
+                        break;
+                    case "6":
+                        loggedIn.removeEmail(myEmail);
+                        status = 1;
+                        break;
                     default:
-                        status=1;
                         break;
                 }
 
@@ -116,30 +130,30 @@ public class Server {
             this.sendMessage("1 - Listar todos os servidores \n2 - Listar servidores ocupados \n3 - Listas servidores leiloados \n4- Listar todos os servidores não reservados e leiloados \n5 - Listar servidores reservados por mim \n6 - Listar todos os servidores do tipo \"large.5k\" \n7 - Listar todos os servidores do tipo \"small.1k\"\n 8- \"Para sair\"\n ");
             String answer = input.readLine();
             String response = "";
-            ArrayList <Servers>  catalogue_list =  new ArrayList<>(catalogue.server_catalogue.values());
-            switch (answer){
+            ArrayList<Servers> catalogue_list = new ArrayList<>(catalogue.server_catalogue.values());
+            switch (answer) {
                 case "1":
-                    for (Servers server: catalogue_list) {
-                        response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String (String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String (String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String (String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String (String.valueOf(server.get_auctioned()))) + "\n\n";
+                    for (Servers server : catalogue_list) {
+                        response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String(String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String(String.valueOf(server.get_auctioned()))) + "\n\n";
                     }
                     break;
                 case "2":
-                    for (Servers server: catalogue_list) {
+                    for (Servers server : catalogue_list) {
                         if (server.get_ocupied() == true) {
                             response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String(String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String(String.valueOf(server.get_auctioned()))) + "\n\n";
                         }
                     }
                     break;
                 case "3":
-                    for (Servers server: catalogue_list) {
+                    for (Servers server : catalogue_list) {
                         if (server.get_auctioned() == true) {
                             response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String(String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String(String.valueOf(server.get_auctioned()))) + "\n\n";
                         }
                     }
                     break;
                 case "4":
-                    for (Servers server: catalogue_list) {
-                        if (server.get_auctioned() == false & server.get_ocupied()==false ) {
+                    for (Servers server : catalogue_list) {
+                        if (server.get_auctioned() == false & server.get_ocupied() == false) {
                             response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String(String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String(String.valueOf(server.get_auctioned()))) + "\n\n";
                         }
                     }
@@ -147,29 +161,29 @@ public class Server {
                 case "5":
                     this.sendMessage("Por favor indique o seu email!\n");
                     String u_email = input.readLine();
-                    for (Servers server: catalogue_list) {
+                    for (Servers server : catalogue_list) {
                         if (server.getUser_email().equals(u_email)) {
                             response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String(String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String(String.valueOf(server.get_auctioned()))) + "\n\n";
                         }
                     }
                     break;
                 case "6":
-                    for (Servers server: catalogue_list) {
+                    for (Servers server : catalogue_list) {
                         if (server.get_type().equals("large.5k")) {
                             response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String(String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String(String.valueOf(server.get_auctioned()))) + "\n\n";
                         }
                     }
                     break;
                 case "7":
-                    for (Servers server: catalogue_list) {
+                    for (Servers server : catalogue_list) {
                         if (server.get_type().equals("small.1k")) {
                             response = response + "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndic_price()))) + " \n\t-- Servidor Ocupado:" + (new String(String.valueOf(server.get_ocupied()))) + " \n\t-- Servidor Leiloado:" + (new String(String.valueOf(server.get_auctioned()))) + "\n\n";
                         }
                     }
                     break;
-                default: break;
+                default:
+                    break;
             }
-
 
             return response;
         }
@@ -179,15 +193,14 @@ public class Server {
             String answer = input.readLine();
             this.sendMessage("Por favor indique o seu email!\n");
             String u_email = input.readLine();
-            if (catalogue.server_catalogue.containsKey(answer)){
-                Servers  s_requested= catalogue.server_catalogue.get(answer);
-                if (s_requested.get_ocupied()== false){
+            if (catalogue.server_catalogue.containsKey(answer)) {
+                Servers s_requested = catalogue.server_catalogue.get(answer);
+                if (s_requested.get_ocupied() == false) {
                     s_requested.set_ocupied(true);
                     s_requested.setUser_email(u_email);
                     s_requested.start();
-                    return "Este é o identificador da reserva: " +answer;
-                }
-                else {
+                    return "Este é o identificador da reserva: " + answer;
+                } else {
                     if (s_requested.get_auctioned() == true) {
                         s_requested.set_minutes(0);
                         s_requested.setUser_email(u_email);
@@ -196,34 +209,39 @@ public class Server {
                         return "O servidor mencionado está ocupado!\n";
                     }
                 }
-            } else{ return "O servidor mencionado não existe!\n";     }
+            } else {
+                return "O servidor mencionado não existe!\n";
+            }
         }
 
         private String liberate_Server() throws IOException {
-            float total_pay=0;
+            float total_pay = 0;
             this.sendMessage("Por favor indique o identificador da reserva!\n");
             String answer = input.readLine();
             this.sendMessage("Por favor indique o seu email!\n");
             String u_email = input.readLine();
-            if (catalogue.server_catalogue.containsKey(answer)){
-                Servers  s_requested= catalogue.server_catalogue.get(answer);
+            if (catalogue.server_catalogue.containsKey(answer)) {
+                Servers s_requested = catalogue.server_catalogue.get(answer);
 
-                if (s_requested.getUser_email().equals(u_email)){
+                if (s_requested.getUser_email().equals(u_email)) {
                     s_requested.set_ocupied(false);
-                    if (s_requested.get_auctioned()== true){
-                        total_pay = s_requested.getIndic_price()*s_requested.get_minutes();
+                    if (s_requested.get_auctioned() == true) {
+                        total_pay = s_requested.getIndic_price() * s_requested.get_minutes();
                         s_requested.setUser_email("");
                         s_requested.set_minutes(0);
                         return "O servidor foi libertado com sucesso! Teria de pagar " + Float.toString(total_pay) + " mas desta vez fica por conta da casa ;D \n";
-                    }else{
-                        total_pay = s_requested.getNominal_price()*s_requested.get_minutes();
+                    } else {
+                        total_pay = s_requested.getNominal_price() * s_requested.get_minutes();
                         s_requested.setUser_email("");
                         s_requested.set_minutes(0);
                         return "O servidor foi libertado com sucesso! Teria de pagar " + Float.toString(total_pay) + " mas desta vez fica por conta da casa ;D \n";
                     }
+                } else {
+                    return "O servidor mencionado já não está associado a si!\n";
                 }
-                else{ return "O servidor mencionado já não está associado a si!\n"; }
-            } else{ return "A transação mencionada não existe!\n";     }
+            } else {
+                return "A transação mencionada não existe!\n";
+            }
         }
 
         private int loginPrompt() {
@@ -236,7 +254,9 @@ public class Server {
                 while (!set) {
                     this.sendMessage("E-mail: ");
                     email = input.readLine();
-                    if (!accounts.isAccountEmail(email)) {
+                    if (email.equalsIgnoreCase("quit")) {
+                        return 0;
+                    } else if (!accounts.isAccountEmail(email)) {
                         this.sendMessage("E-mail inválido\n");
                     } else if (loggedIn.containsEmail(email)) {
                         this.sendMessage("Um utilizador com esse e-mail já efetuou log-in\n");
@@ -253,6 +273,7 @@ public class Server {
                                     this.sendMessage("Password Inválida. Tem mais " + tries + " tentativas\n");
                                 }
                             } else {
+                                myEmail = email;
                                 loggedIn.addEmail(email);
                                 set = true;
                                 valid = true;
@@ -302,15 +323,15 @@ public class Server {
         public void run() {
             try {
                 int phase = 0;
-                while (phase == 0) {
-                    phase = this.startMenu();
+                while (phase != -1) {
+                    if (phase == 0) {
+                        phase = this.startMenu();
+                    }
+                    if (phase == 1) {
+                        phase = this.mainPage();
+                    }
                 }
-                while(phase == 1){
-                    sendMessage("Está dentro do sistema!");
-                    phase = this.mainPage();
-                   break;
-                }
-                sendMessage("Bye!");
+                sendMessage("exit");
             } catch (Exception e) {
                 System.out.println("ups... ocorreu um erro, sei lá qual");
                 System.out.println(e);

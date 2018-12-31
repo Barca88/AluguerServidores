@@ -18,6 +18,7 @@ import java.util.Scanner;
  * @author C, J, A, I
  */
 public class Client {
+
     private String address;
     private int port;
     private Socket socket;
@@ -26,7 +27,6 @@ public class Client {
     private Scanner read;
     private boolean work;
 
-    
     public Client() throws IOException {
 
         this.address = "127.0.0.1";
@@ -45,32 +45,29 @@ public class Client {
                 String respostaSocket = new String();
                 while (respostaSocket.equals("Bye!") == false) {
                     respostaSocket = input.readLine();
-                    if(respostaSocket.equals("doLogout")){
+                    if (respostaSocket.equals("exit")) {
                         closeSocket();
                         break;
                     }
 
-                    if(respostaSocket != null && !respostaSocket.equals("")) System.out.println(respostaSocket);
+                    if (respostaSocket != null && !respostaSocket.equals("")) {
+                        System.out.println(respostaSocket);
+                    }
                 }
-            } catch (IOException ex) {}
+            } catch (IOException ex) {
+            }
         }).start();
 
         while (work) {
 
             String clientText = read.nextLine();
 
-            if (clientText.equalsIgnoreCase("exit")) {
-                closeSocket();
-                break;
-            }
-
-            try{
-            output.write(clientText);
-            output.newLine();
-            output.flush();
-            }
-            catch (IOException e) {
-                System.out.println("Logout efectuado com sucesso.");
+            try {
+                output.write(clientText);
+                output.newLine();
+                output.flush();
+            } catch (IOException e) {
+                System.out.println("O programa terminou com sucesso");
             }
         }
     }
