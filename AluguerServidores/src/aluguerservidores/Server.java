@@ -79,7 +79,7 @@ public class Server {
         }
 
         private int startMenu() throws IOException {
-            this.sendMessage("1 - Login \n2 - Registar");
+            this.sendMessage("1 - Login \n2 - Registar \nquit para sair");
             String answer = input.readLine();
             if (answer.equalsIgnoreCase("quit")) {
                 return -1;
