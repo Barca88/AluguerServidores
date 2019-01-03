@@ -5,6 +5,8 @@
  */
 package aluguerservidores;
 
+import java.util.ArrayList;
+
 public class Account {
 
     private String email;
@@ -19,6 +21,7 @@ public class Account {
     public String getEmail() {
         return email;
     }
+    
 
     public void setEmail(String email) {
         this.email = email;

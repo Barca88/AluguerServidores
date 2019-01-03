@@ -5,7 +5,9 @@
  */
 package aluguerservidores;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.locks.Condition;
 
 /**
  *
@@ -23,8 +25,18 @@ public class AccountsMap {
         return accounts.containsKey(email);
     }
 
+    public synchronized void addCondition(String mail, Condition c) {
+    }
+
     public synchronized void addAccount(Account account) {
         accounts.put(account.getEmail(), account);
+    }
+
+    public synchronized Account getAccount(String s) {
+        return this.accounts.get(s);
+    }
+
+    public synchronized void signal(String mail){
     }
 
     public synchronized boolean isValidPassword(String email, String password) {

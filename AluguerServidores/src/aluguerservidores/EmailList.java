@@ -1,6 +1,8 @@
 package aluguerservidores;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.concurrent.locks.Condition;
 
 public class EmailList {
 
@@ -13,12 +15,13 @@ public class EmailList {
     public synchronized boolean containsEmail(String email) {
         return this.list.contains(email);
     }
+    
 
     public synchronized boolean addEmail(String email) {
         return this.list.add(email);
     }
     
-    public synchronized boolean removeEmail(String email) {
-        return this.list.remove(email);
+    public synchronized void removeEmail(String email) {
+         this.list.remove(email);
     }
 }
