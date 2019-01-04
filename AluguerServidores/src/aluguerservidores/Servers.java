@@ -12,9 +12,9 @@ public class Servers extends Thread {
     private float indic_price;
     private float minutes;
     private boolean occupied;
-    private boolean auctioned;
-    private String user_email;
+    private boolean inAuction;
     private boolean boughtInAuction;
+    private String user_email;
 
     public Servers(String type, float n_price, float i_price, boolean auct, String user) throws NoSuchAlgorithmException {
         this.id = this.create_id();
@@ -24,7 +24,7 @@ public class Servers extends Thread {
         this.minutes = 0;
         this.user_email = user;
         this.occupied = true;
-        this.auctioned = auct;
+        this.inAuction = auct;
         this.boughtInAuction = false;
     }
 
@@ -35,7 +35,7 @@ public class Servers extends Thread {
         this.indic_price = 0;
         this.minutes = 0;
         this.occupied = false;
-        this.auctioned = false;
+        this.inAuction = false;
         this.user_email = "";
         this.boughtInAuction = false;
     }
@@ -128,11 +128,11 @@ public class Servers extends Thread {
     }
 
     public synchronized void set_auctioned(boolean x) {
-        this.auctioned = x;
+        this.inAuction = x;
     }
 
-    public synchronized boolean isAuctioned() {
-        return this.auctioned;
+    public synchronized boolean isInAuction() {
+        return this.inAuction;
     }
 
     public synchronized Servers clone() {
@@ -143,7 +143,7 @@ public class Servers extends Thread {
         this.indic_price = 0;
         this.minutes = 0;
         this.occupied = false;
-        this.auctioned = false;
+        this.inAuction = false;
         this.user_email = "";
         this.boughtInAuction = false;
     }
