@@ -41,12 +41,16 @@ public class Server {
         this.queue = new MyQueue(catalogue.getTypes());
     }
 
-    public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
-        Server servidor = new Server();
-        servidor.getInput();
+    public static void main(String[] args) throws Exception{
+        try {
+            Server servidor = new Server();
+            servidor.getInput();
+        } catch (Exception e){
+            throw new Exception(e);
+        }
     }
 
-    private void getInput() throws IOException {
+    private void getInput() throws Exception {
         auctionManager.start();
         while (true) {
             try {
@@ -59,6 +63,7 @@ public class Server {
                 this.clients.remove(st);
                 System.out.println("ClientThread " + st.getId() + "finished\n");*/
             } catch (Exception e) {
+                throw new Exception(e);
             }
         }
     }
@@ -84,6 +89,7 @@ public class Server {
                 output.newLine();
                 output.flush();
             } catch (IOException ex) {
+                System.out.println("Error send Message!");
             }
         }
 
@@ -93,11 +99,9 @@ public class Server {
             if (answer.equalsIgnoreCase("quit")) {
                 return -1;
             } else if (answer.equals("2")) {
-                int singupResult = signupPrompt();
-                return singupResult;
+                return signupPrompt();
             } else if (answer.equals("1")) {
-                int loginResult = loginPrompt();
-                return loginResult;
+                return loginPrompt();
             } else {
                 return 0;
             }
@@ -106,7 +110,7 @@ public class Server {
         private int mainPage() throws IOException, InterruptedException {
             ArrayList<Servers> catalogue_list = catalogue.makeServerList();
             int status = 0;
-            String answer = "";
+            String answer;
             while (status == 0) {
                 this.sendMessage("\n1 - Listar Catálogo \n2 - Reservar servidor \n3 - Meus Servidores \n4 - Libertar servidor \n5 - Log Out");
                 answer = input.readLine();
@@ -135,9 +139,11 @@ public class Server {
             return 0;
         }
 
-        private String listCatalogue() throws IOException {
-            String response = "Servidores livres:\n" + listFreeServers() + "Servidores Ocupados:\n" + listOccupiedServers();
-            return response;
+        private String listCatalogue(){
+            StringBuilder sb = new StringBuilder();
+            sb.append("Servidores livres:\n").append(listFreeServers());
+            sb.append("Servidores Ocupados:\n").append(listOccupiedServers());
+            return sb.toString();
         }
 
         /*private String list_catalogue() throws IOException {
@@ -190,7 +196,7 @@ public class Server {
 
             return response;
         }*/
-        private String request_Server() throws IOException, InterruptedException {
+        private String request_Server() throws IOException{
             this.sendMessage(listFreeServers());
             this.sendMessage("\n1 - Reservar servidor pelo preço nominal \n2 - Propor oferta de preço em leilão");
             String answer = input.readLine();
@@ -208,15 +214,15 @@ public class Server {
             return response;
         }
 
-        private String rentServer() throws IOException, InterruptedException {
+        private String rentServer() throws IOException {
             ArrayList<String> typeList = catalogue.getTypes();
-            String message = "";
+            StringBuilder sb = new StringBuilder();
             int i = 1;
             for (String type : typeList) {
-                message += i + " - Alugar servidor to tipo " + type + "\n";
+                sb.append(i).append(" - Alugar servidor to tipo ").append(type).append("\n");
                 i++;
             }
-            this.sendMessage(message);
+            this.sendMessage(sb.toString());
 
             String answer = input.readLine();
             int n;
@@ -276,13 +282,14 @@ public class Server {
         private String serverAuction() throws IOException {
             ArrayList<String> typeList = catalogue.getTypes();
             String serverType;
-            String message = "";
+            StringBuilder sb = new StringBuilder();
             int i = 1;
             for (String type : typeList) {
-                message += i + " - Propor oferta para servidor to tipo " + type + "\n";
+                sb.append(i).append(" - Propor oferta para servidor to tipo ");
+                sb.append(type).append("\n");
                 i++;
             }
-            this.sendMessage(message);
+            this.sendMessage(sb.toString());
             String answer = input.readLine();
             int n;
 
@@ -329,7 +336,7 @@ public class Server {
             } else {
                 int i = 0;
                 for (Servers server : catalogue_list) {
-                    if (!server.isOccupied() && server.getType() == type) {
+                    if (!server.isOccupied() && server.getType().equals(type)) {
                         i++;
                     }
                 }
@@ -339,17 +346,23 @@ public class Server {
 
         private String listMyServers() {
             ArrayList<Servers> catalogue_list = catalogue.makeServerList();
-            String response = "";
+            StringBuilder sb = new StringBuilder();
             for (Servers server : catalogue_list) {
                 if (server.getUserEmail().equals(myEmail)) {
-                    response = response + "Id da Reserva: " + server.getIdServers() + " \n\t-- Tipo: " + server.getType() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominalPrice()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndicPrice()))) + "\nMinutos ativo: " + (new String(String.valueOf(server.getMinutes()))) + "\nTotal a pagar: " + (new String(String.valueOf(server.getCurrentTotal()))) + "\n\n";
+                    sb.append("Id da Reserva: ").append(server.getIdServers());
+                    sb.append("\n\t-- Tipo: ").append(server.getType());
+                    sb.append("\n\t-- Preço nominal:").append(server.getNominalPrice());
+                    sb.append("\n\t-- Preço indicado:").append(server.getIndicPrice());
+                    sb.append("\nMinutos ativo: ").append(server.getMinutes());
+                    sb.append("\nTotal a pagar: ").append(server.getCurrentTotal());
+                    sb.append("\n\n");
                 }
             }
-            return response;
+            return sb.toString();
         }
 
         private String listFreeServers() {
-            String response = "";
+            StringBuilder sb = new StringBuilder();
             ArrayList<Servers> catalogue_list = catalogue.makeServerList();
             ArrayList<String> typeList = catalogue.getTypes();
             int[] ntype = new int[typeList.size()];
@@ -367,14 +380,16 @@ public class Server {
             }
             i = 0;
             for (String type : typeList) {
-                response += "\t" + type + ": " + ntype[i] + "\n\t-- Preço nominal: " + catalogue.getNominalPrice(type) + "\n";
+                sb.append("\t").append(type).append(": ").append(ntype[i]);
+                sb.append("\n\t-- Preço nominal: ");
+                sb.append(catalogue.getNominalPrice(type)).append("\n");
                 i++;
             }
-            return response;
+            return sb.toString();
         }
 
         private String listOccupiedServers() {
-            String response = "";
+            StringBuilder sb = new StringBuilder();
             ArrayList<Servers> catalogue_list = catalogue.makeServerList();
             ArrayList<String> typeList = catalogue.getTypes();
             int[] ntype = new int[typeList.size()];
@@ -392,29 +407,33 @@ public class Server {
             }
             i = 0;
             for (String type : typeList) {
-                response += "\t" + type + ": " + ntype[i] + "\n";
+                sb.append("\t").append(type).append(": ");
+                sb.append(ntype[i]).append("\n");
                 i++;
             }
-            return response;
+            return sb.toString();
         }
 
-        private String liberateServer() throws IOException, InterruptedException {
-            float total_pay = 0;
+        private String liberateServer() throws IOException{
             this.sendMessage("Por favor indique o identificador da reserva!\n");
             String answer = input.readLine();
             String u_email = myEmail;
+            StringBuilder sb = new StringBuilder();
+
             if (catalogue.containsKey(answer)) {
                 Servers s_requested = catalogue.getServer(answer);
                 if (s_requested.getUserEmail().equals(u_email)) {
-                    total_pay = s_requested.getCurrentTotal();
+                    sb.append("O servidor foi libertado com sucesso! Teria de pagar " );
+                    sb.append(s_requested.getCurrentTotal());
+                    sb.append(" mas desta vez fica por conta da casa ;D \n");
                     s_requested.reset();
-                    return "O servidor foi libertado com sucesso! Teria de pagar " + Float.toString(total_pay) + " mas desta vez fica por conta da casa ;D \n";
                 } else {
-                    return "O servidor mencionado já não está associado a si!\n";
+                    sb.append("O servidor mencionado já não está associado a si!\n");
                 }
             } else {
-                return "A referência é inválida\n";
+                sb.append("A referência é inválida\n");
             }
+            return sb.toString();
         }
 
         private int loginPrompt() {
