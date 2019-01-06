@@ -37,8 +37,8 @@ public class Server {
         this.loggedIn = new EmailList();
         this.catalogue = new Catalogue();
         this.writers = new WriterMap();
-        this.auctionManager = new AuctionManager(catalogue);
-        this.queue = new MyQueue(catalogue);
+        this.auctionManager = new AuctionManager(catalogue, writers);
+        this.queue = new MyQueue(catalogue, writers);
     }
 
     public static void main(String[] args) throws Exception{
@@ -298,7 +298,7 @@ public class Server {
 
             serverType = typeList.get(n - 1);
 
-            Auction auction = auctionManager.joinAuction(myEmail, serverType, output);
+            Auction auction = auctionManager.joinAuction(myEmail, serverType);
 
             while (!auction.isFinished()) {
                 answer = input.readLine();
@@ -326,12 +326,17 @@ public class Server {
         private String listMyServers() {
             ArrayList<Servers> catalogue_list = catalogue.makeServerList();
             StringBuilder sb = new StringBuilder();
+
+            float price;
             for (Servers server : catalogue_list) {
                 if (server.getUserEmail().equals(myEmail)) {
+                    if (server.wasBoughtInAuction())
+                        price = server.getActualPrice();
+                    else
+                        price = server.getNominalPrice();
                     sb.append("Id da Reserva: ").append(server.getIdServers());
                     sb.append(" \n\t-- Tipo: ").append(server.getType());
-                    sb.append(" \n\t-- Preço nominal:").append(server.getNominalPrice());
-                    sb.append(" \n\t-- Preço indicado:").append(server.getActualPrice());
+                    sb.append(" \n\t-- Preço Por hora:").append(price);
                     sb.append("\nMinutos ativo: ").append(server.getMinutes());
                     sb.append("\nTotal a pagar: ").append(server.getCurrentTotal());
                     sb.append("\n\n");

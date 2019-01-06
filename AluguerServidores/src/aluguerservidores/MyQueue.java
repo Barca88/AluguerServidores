@@ -12,12 +12,12 @@ import static jdk.nashorn.internal.objects.NativeJava.type;
 public class MyQueue extends Thread {
 
     private HashMap<String, Queue<String>> mapQueue;
-    private HashMap<String, BufferedWriter> writers;
+    private WriterMap writers;
     Catalogue catalogue;
 
-    public MyQueue(Catalogue c) {
+    public MyQueue(Catalogue c, WriterMap w) {
         this.mapQueue = new HashMap<>();
-        this.writers = new HashMap<>();
+        this.writers = w;
         this.catalogue = c;
         List<String> l = catalogue.getTypes();
         for (String tipo : l) {
@@ -29,7 +29,6 @@ public class MyQueue extends Thread {
     public synchronized void addQueue(String tipo, String user, BufferedWriter b) {
         if (mapQueue.containsKey(tipo)) {
             mapQueue.get(tipo).add(user);
-            writers.put(user, b);
         }
     }
 
@@ -48,15 +47,6 @@ public class MyQueue extends Thread {
         }
     }
 
-    public synchronized void sendMessage(String s, String user) {
-        BufferedWriter output = this.writers.get(user);
-        try {
-            output.write(s);
-            output.newLine();
-            output.flush();
-        } catch (IOException ex) {
-        }
-    }
 
     public synchronized void AllocateFreeServers() {
         ArrayList<String> types = catalogue.getTypes();
@@ -73,7 +63,7 @@ public class MyQueue extends Thread {
                     if (user != null) {
                         server.setUserEmail(user);
                         server.startServer();
-                        sendMessage("Quem espera sempre alcança! Um servidor foi libertado e reservado para si. Este é o identificador da reserva: " + server.getIdServers() + "\n", user);
+                        writers.writeMessage(user, "Quem espera sempre alcança! Um servidor foi libertado e reservado para si. Este é o identificador da reserva: " + server.getIdServers() + "\n");
                         writers.remove(user);
                     } else {
                         server.setOccupied(false);
