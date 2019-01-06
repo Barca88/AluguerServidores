@@ -106,7 +106,7 @@ public class Server {
                 answer = input.readLine();
                 switch (answer) {
                     case "1":
-                        this.sendMessage(this.list_catalogue());
+                        this.sendMessage(this.listCatalogue());
                         break;
                     case "2":
                         this.sendMessage(this.request_Server());
@@ -115,7 +115,7 @@ public class Server {
 
                         break;
                     case "4":
-                        this.sendMessage(this.liberate_Server());
+                        this.sendMessage(this.liberateServer());
                         break;
                     case "5":
                         break;
@@ -131,7 +131,7 @@ public class Server {
             return 0;
         }
 
-        private String list_catalogue() throws IOException {
+        private String listCatalogue() throws IOException {
             this.sendMessage("\n1 - Listar servidores livres \n2 - Listar servidores ocupados \n3 - Listar servidores para leilão \n4 - Listar servidores alugados por mim \n5 - Listar todos os servidores do tipo \"large.5k\" \n6 - Listar todos os servidores do tipo \"small.1k\"\n7- \"Para sair\"\n ");
             String answer = input.readLine();
             String response = "";
@@ -143,35 +143,35 @@ public class Server {
                 case "2":
                     for (Servers server : catalogue_list) {
                         if (server.isOccupied()) {
-                            response = "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (String.valueOf(server.getNominal_price())) + " \n\t-- Preço indicado:" + (String.valueOf(server.getIndic_price())) + " \n\t-- Servidor Ocupado:" + (String.valueOf(server.isOccupied())) + " \n\t-- Servidor Leiloado:" + (String.valueOf(server.isInAuction())) + "\n\n";
+                            response = "Id do Servidor: " + server.getIdServers() + " \n\t-- Tipo: " + server.getType() + " \n\t-- Preço nominal:" + (String.valueOf(server.getNominalPrice())) + " \n\t-- Preço indicado:" + (String.valueOf(server.getIndicPrice())) + " \n\t-- Servidor Ocupado:" + (String.valueOf(server.isOccupied())) + " \n\t-- Servidor Leiloado:" + (String.valueOf(server.isInAuction())) + "\n\n";
                         }
                     }
                     break;
                 case "3":
                     for (Servers server : catalogue_list) {
                         if (server.isInAuction() && !server.isOccupied()) {
-                            response = "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (String.valueOf(server.getNominal_price())) + " \n\t-- Última oferta:" + (String.valueOf(server.getIndic_price())) + " \n\t-- Servidor Leiloado:" + (String.valueOf(server.isInAuction())) + "\n\n";
+                            response = "Id do Servidor: " + server.getIdServers() + " \n\t-- Tipo: " + server.getType() + " \n\t-- Preço nominal:" + (String.valueOf(server.getNominalPrice())) + " \n\t-- Última oferta:" + (String.valueOf(server.getIndicPrice())) + " \n\t-- Servidor Leiloado:" + (String.valueOf(server.isInAuction())) + "\n\n";
                         }
                     }
                     break;
                 case "4":
                     for (Servers server : catalogue_list) {
-                        if (server.getUser_email().equals(myEmail)) {
-                            response = "Id da Reserva: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (String.valueOf(server.getNominal_price())) + " \n\t-- Preço indicado:" + (String.valueOf(server.getIndic_price())) + "\nMinutos ativo: " + (String.valueOf(server.getMinutes())) + "\nTotal a pagar: " + (String.valueOf(server.getCurrentTotal())) + "\n\n";
+                        if (server.getUserEmail().equals(myEmail)) {
+                            response = "Id da Reserva: " + server.getIdServers() + " \n\t-- Tipo: " + server.getType() + " \n\t-- Preço nominal:" + (String.valueOf(server.getNominalPrice())) + " \n\t-- Preço indicado:" + (String.valueOf(server.getIndicPrice())) + "\nMinutos ativo: " + (String.valueOf(server.getMinutes())) + "\nTotal a pagar: " + (String.valueOf(server.getCurrentTotal())) + "\n\n";
                         }
                     }
                     break;
                 case "5":
                     for (Servers server : catalogue_list) {
-                        if (server.get_type().equals("large.5k")) {
-                            response = "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (String.valueOf(server.getNominal_price())) + " \n\t-- Preço indicado:" + (String.valueOf(server.getIndic_price())) + " \n\t-- Servidor Ocupado:" + (String.valueOf(server.isOccupied())) + " \n\t-- Servidor Leiloado:" + (String.valueOf(server.isInAuction())) + "\n\n";
+                        if (server.getType().equals("large.5k")) {
+                            response = "Id do Servidor: " + server.getIdServers() + " \n\t-- Tipo: " + server.getType() + " \n\t-- Preço nominal:" + (String.valueOf(server.getNominalPrice())) + " \n\t-- Preço indicado:" + (String.valueOf(server.getIndicPrice())) + " \n\t-- Servidor Ocupado:" + (String.valueOf(server.isOccupied())) + " \n\t-- Servidor Leiloado:" + (String.valueOf(server.isInAuction())) + "\n\n";
                         }
                     }
                     break;
                 case "6":
                     for (Servers server : catalogue_list) {
-                        if (server.get_type().equals("small.1k")) {
-                            response = "Id do Servidor: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (String.valueOf(server.getNominal_price())) + " \n\t-- Preço indicado:" + (String.valueOf(server.getIndic_price())) + " \n\t-- Servidor Ocupado:" + (String.valueOf(server.isOccupied())) + " \n\t-- Servidor Leiloado:" + (String.valueOf(server.isInAuction())) + "\n\n";
+                        if (server.getType().equals("small.1k")) {
+                            response = "Id do Servidor: " + server.getIdServers() + " \n\t-- Tipo: " + server.getType() + " \n\t-- Preço nominal:" + (String.valueOf(server.getNominalPrice())) + " \n\t-- Preço indicado:" + (String.valueOf(server.getIndicPrice())) + " \n\t-- Servidor Ocupado:" + (String.valueOf(server.isOccupied())) + " \n\t-- Servidor Leiloado:" + (String.valueOf(server.isInAuction())) + "\n\n";
                         }
                     }
                     break;
@@ -227,14 +227,14 @@ public class Server {
             if (requested == null) {
                 requested = catalogue.findOccupiedAuctionedServerOfType(tipo);
                 if (requested != null) {
-                    String oldUserMail = requested.getUser_email();
+                    String oldUserMail = requested.getUserEmail();
                     Account oldUser = accounts.getAccount(oldUserMail);
                     requested.reset();
-                    requested.set_occupied(true);
-                    requested.setUser_email(myEmail);
-                    writers.writeMessage(oldUserMail, "Lamentamos, mas a reserva que obteve em leilão, cuja identificação é: " + requested.get_id()
+                    requested.setOccupied(true);
+                    requested.setUserEmail(myEmail);
+                    writers.writeMessage(oldUserMail, "Lamentamos, mas a reserva que obteve em leilão, cuja identificação é: " + requested.getIdServers()
                             + " teve de ser cedida para uma reserva pelo preço nominal, por falta de disponibilidade de servidores.");
-                    return " Este é o identificador da reserva: " + requested.get_id() + "\n";
+                    return " Este é o identificador da reserva: " + requested.getIdServers() + "\n";
                 } else {
                     return "Não há servidores disponiveis";
                  /*   this.sendMessage( "Neste momento não há servidores disponíveis do tipo pretendido\nPretende eentrar para a Lista de Espera?\n1 - Sim\n2 - Não");
@@ -258,10 +258,10 @@ public class Server {
                     */
                 }
             } else {
-                requested.set_occupied(true);
-                requested.setUser_email(myEmail);
+                requested.setOccupied(true);
+                requested.setUserEmail(myEmail);
                 requested.start();
-                return "Este é o identificador da reserva: " + requested.get_id() + "\n";
+                return "Este é o identificador da reserva: " + requested.getIdServers() + "\n";
             }
         }
 
@@ -303,10 +303,10 @@ public class Server {
                         return "Lamentamos, mas entretanto todos os servidores desse tipo foram alugados";
                     } else {
                         requested.reset();
-                        requested.set_occupied(true);
+                        requested.setOccupied(true);
                         requested.setBoughtInAuction(true);
-                        requested.setUser_email(myEmail);
-                        return "Este é o identificador da reserva: " + requested.get_id() + "\n";
+                        requested.setUserEmail(myEmail);
+                        return "Este é o identificador da reserva: " + requested.getIdServers() + "\n";
                     }
                 } else {
                     return ("Última oferta: " + catalogue.getBidPrice(serverType));
@@ -322,7 +322,7 @@ public class Server {
             } else {
                 int i = 0;
                 for (Servers server : catalogue_list) {
-                    if (!server.isOccupied() && server.get_type() == type) {
+                    if (!server.isOccupied() && server.getType() == type) {
                         i++;
                     }
                 }
@@ -340,7 +340,7 @@ public class Server {
                 if (!server.isOccupied()) {
                     i = 0;
                     for (String type : typeList) {
-                        if (server.get_type().equals(type)) {
+                        if (server.getType().equals(type)) {
                             ntype[i]++;
                         }
                         i++;
@@ -356,14 +356,14 @@ public class Server {
             return response;
         }
 
-        private String liberate_Server() throws IOException, InterruptedException {
+        private String liberateServer() throws IOException, InterruptedException {
             float total_pay = 0;
             this.sendMessage("Por favor indique o identificador da reserva!\n");
             String answer = input.readLine();
             String u_email = myEmail;
             if (catalogue.containsKey(answer)) {
                 Servers s_requested = catalogue.getServer(answer);
-                if (s_requested.getUser_email().equals(u_email)) {
+                if (s_requested.getUserEmail().equals(u_email)) {
                     total_pay = s_requested.getCurrentTotal();
                     s_requested.reset();
                     return "O servidor foi libertado com sucesso! Teria de pagar " + Float.toString(total_pay) + " mas desta vez fica por conta da casa ;D \n";

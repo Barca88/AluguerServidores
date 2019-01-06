@@ -24,17 +24,17 @@ public class Catalogue {
 
         for (int i = 0; i < 5; i++) {
             if ((r.nextInt(2) % 2) == 0) {
-                this.add_Server(new Servers("small.1k", (float) 41.67));
+                this.addServer(new Servers("small.1k", (float) 41.67));
             } else {
-                this.add_Server(new Servers("large.5k", (float) 208.33));
+                this.addServer(new Servers("large.5k", (float) 208.33));
             }
         }
     }
 
-    public synchronized void add_Server(Servers s) {
-        String id = s.get_id();
-        String type = s.get_type();
-        float price = s.getNominal_price();
+    public synchronized void addServer(Servers s) {
+        String id = s.getIdServers();
+        String type = s.getType();
+        float price = s.getNominalPrice();
         this.server_catalogue.put(id, s);
         if (!this.types.contains(type)) {
             this.types.add(type);
@@ -50,7 +50,7 @@ public class Catalogue {
     public synchronized Servers findAvailableServerOfType(String type) {
         ArrayList<Servers> list = makeServerList();
         for (Servers server : list) {
-            if (server.get_type().equals(type) && !server.isOccupied()) {
+            if (server.getType().equals(type) && !server.isOccupied()) {
                 return server;
             }
         }
@@ -60,7 +60,7 @@ public class Catalogue {
     public synchronized Servers findOccupiedAuctionedServerOfType(String type) {
         ArrayList<Servers> list = makeServerList();
         for (Servers server : list) {
-            if (server.get_type().equals(type) && server.isOccupied() && server.wasBoughtInAuction()) {
+            if (server.getType().equals(type) && server.isOccupied() && server.wasBoughtInAuction()) {
                 return server;
             }
         }
