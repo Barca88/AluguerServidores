@@ -47,7 +47,7 @@ public class Catalogue {
         }
     }
 
-    public synchronized Servers findAvailableServerOfType(String type) {
+    public synchronized Servers getAvailableServer(String type) {
         ArrayList<Servers> list = makeServerList();
         for (Servers server : list) {
             if (server.getType().equals(type) && !server.isOccupied()) {
@@ -70,8 +70,8 @@ public class Catalogue {
     public synchronized ArrayList<String> getTypes() {
         return types;
     }
-    
-    public synchronized boolean containsType(String type){
+
+    public synchronized boolean containsType(String type) {
         return this.types.contains(type);
     }
 
@@ -83,6 +83,38 @@ public class Catalogue {
         return server_catalogue.get(s);
     }
 
+    public int nFreeServers(String type) {
+        ArrayList<Servers> catalogue_list = makeServerList();
+        ArrayList<String> typeList = getTypes();
+        if (!typeList.contains(type)) {
+            return -1;
+        } else {
+            int i = 0;
+            for (Servers server : catalogue_list) {
+                if (!server.isOccupied() && server.getType() == type) {
+                    i++;
+                }
+            }
+            return i;
+        }
+    }
+
+    public int nOccupiedServers(String type) {
+        ArrayList<Servers> catalogue_list = makeServerList();
+        ArrayList<String> typeList = getTypes();
+        if (!typeList.contains(type)) {
+            return -1;
+        } else {
+            int i = 0;
+            for (Servers server : catalogue_list) {
+                if (server.isOccupied() && server.getType() == type) {
+                    i++;
+                }
+            }
+            return i;
+        }
+    }
+
     public synchronized ArrayList<Servers> makeServerList() {
         ArrayList<Servers> list = new ArrayList<>(server_catalogue.values());
         return list;
@@ -91,7 +123,7 @@ public class Catalogue {
     public synchronized float getNominalPrice(String s) {
         return this.nominalPrices.get(s);
     }
-    
+
     public synchronized float getBidPrice(String s) {
         return this.bidPrices.get(s);
     }

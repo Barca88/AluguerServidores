@@ -99,7 +99,7 @@ public class Auction extends Thread {
         Servers server;
         switch (this.finished) {
             case 1:
-                server = catalogue.findAvailableServerOfType(type);
+                server = catalogue.getAvailableServer(type);
                 if (server != null && !currentHighestBidder.equals("")) {
                     server.setOccupied(true);
                     server.setUserEmail(currentHighestBidder);
@@ -112,7 +112,7 @@ public class Auction extends Thread {
                 }
                 break;
             case 2:
-                server = catalogue.findAvailableServerOfType(type);
+                server = catalogue.getAvailableServer(type);
                 if (server != null) {
                     server.setOccupied(true);
                     server.setUserEmail(currentHighestBidder);
