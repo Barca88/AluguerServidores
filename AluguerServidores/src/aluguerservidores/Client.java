@@ -43,7 +43,7 @@ public class Client {
         new Thread(() -> {
             try {
                 String respostaSocket = new String();
-                while (respostaSocket.equals("Bye!") == false) {
+                while (!respostaSocket.equals("Bye!")) {
                     respostaSocket = input.readLine();
                     if (respostaSocket.equals("exit")) {
                         closeSocket();
