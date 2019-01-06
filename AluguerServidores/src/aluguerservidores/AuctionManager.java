@@ -74,7 +74,7 @@ public class AuctionManager extends Thread {
                 createAuction(type);
                 auctions.get(type).addParticipant(user, b);
             }
-            sendMessage(b, "Entrou no Leilão. \n Faltam " + (maxTime - timers.get(type)) + " segundos para terminar");
+            sendMessage(b, "Entrou no Leilão. Escreva o comando \"quit\" para sair. \n Faltam " + (maxTime - timers.get(type)) + " segundos para terminar");
             return auctions.get(type);
         } else {
             sendMessage(b, "Não existem servidores do tipo pretendido\n");
