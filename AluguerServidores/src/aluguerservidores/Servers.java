@@ -15,12 +15,11 @@ public class Servers extends Thread {
     private float actualPrice;
     private float minutes;
     private boolean occupied;
-    private boolean inAuction;
     private boolean boughtInAuction;
     private boolean firstTime;
     private String userEmail;
 
-    public Servers(String type, float n_price, float i_price, boolean auct, String user) throws NoSuchAlgorithmException {
+    public Servers(String type, float n_price, float i_price, String user) throws NoSuchAlgorithmException {
         this.id = this.createId();
         this.type = type;
         this.nominalPrice = n_price;
@@ -28,7 +27,6 @@ public class Servers extends Thread {
         this.minutes = 0;
         this.userEmail = user;
         this.occupied = true;
-        this.inAuction = auct;
         this.boughtInAuction = false;
         this.firstTime = true;
     }
@@ -40,9 +38,9 @@ public class Servers extends Thread {
         this.actualPrice = 0;
         this.minutes = 0;
         this.occupied = false;
-        this.inAuction = false;
         this.userEmail = "";
         this.boughtInAuction = false;
+        this.firstTime = true;
     }
 
     public synchronized void setMinutes(float m) {
@@ -128,14 +126,6 @@ public class Servers extends Thread {
         return this.occupied;
     }
 
-    public synchronized void setAuctioned(boolean x) {
-        this.inAuction = x;
-    }
-
-    public synchronized boolean isInAuction() {
-        return this.inAuction;
-    }
-
     public synchronized Servers clone() {
         return this.clone();
     }
@@ -145,7 +135,6 @@ public class Servers extends Thread {
         this.actualPrice = 0;
         this.minutes = 0;
         this.occupied = false;
-        this.inAuction = false;
         this.userEmail = "";
         this.boughtInAuction = false;
     }
@@ -169,13 +158,15 @@ public class Servers extends Thread {
 
     public void run() {
         while (true) {
-            while (isOccupied() == true) {
+            System.out.println("grego");
+            while (isOccupied()) {
                 try {
+                    System.out.println("grego");
                     sleep(6000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if (isOccupied() == true) {
+                if (isOccupied()) {
                     incMinutes();
                 }
             }

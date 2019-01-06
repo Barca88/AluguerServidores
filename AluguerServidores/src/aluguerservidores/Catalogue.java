@@ -22,11 +22,13 @@ public class Catalogue {
         this.bidPrices = new HashMap<>();
         this.types = new ArrayList<>();
 
-        for (int i = 0; i < 5; i++) {
-            if ((r.nextInt(2) % 2) == 0) {
+        for (int i = 0; i < 10; i++) {
+            if ((r.nextInt(3) % 3) == 0) {
                 this.addServer(new Servers("small.1k", (float) 41.67));
-            } else {
+            } else if((r.nextInt(3) % 3) == 1){
                 this.addServer(new Servers("large.5k", (float) 208.33));
+            } else {
+                this.addServer(new Servers("cool.8k", (float) 579.63));
             }
         }
     }

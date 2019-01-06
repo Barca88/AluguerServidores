@@ -143,57 +143,6 @@ public class Server {
             return sb.toString();
         }
 
-        /*private String list_catalogue() throws IOException {
-            this.sendMessage("\n1 - Listar servidores livres \n2 - Listar servidores ocupados \n3 - Listar servidores para leilão \n4 - Listar servidores alugados por mim \n5 - Listar todos os servidores do tipo \"large.5k\" \n6 - Listar todos os servidores do tipo \"small.1k\"\n7- \"Para sair\"\n ");
-            String answer = input.readLine();
-            String response = "";
-            ArrayList<Servers> catalogue_list = catalogue.makeServerList();
-            switch (answer) {
-                case "1":
-                    response = listFreeServers();
-                    break;
-                case "2":
-                    for (Servers server : catalogue_list) {
-                        if (server.isOccupied()) {
-                            response = "Id do Servidor: " + server.getIdServers() + " \n\t-- Tipo: " + server.getType() + " \n\t-- Preço nominal:" + (String.valueOf(server.getNominalPrice())) + " \n\t-- Preço indicado:" + (String.valueOf(server.getActualPrice())) + " \n\t-- Servidor Ocupado:" + (String.valueOf(server.isOccupied())) + " \n\t-- Servidor Leiloado:" + (String.valueOf(server.isInAuction())) + "\n\n";
-                        }
-                    }
-                    break;
-                case "3":
-                    for (Servers server : catalogue_list) {
-                        if (server.isInAuction() && !server.isOccupied()) {
-                            response = "Id do Servidor: " + server.getIdServers() + " \n\t-- Tipo: " + server.getType() + " \n\t-- Preço nominal:" + (String.valueOf(server.getNominalPrice())) + " \n\t-- Última oferta:" + (String.valueOf(server.getActualPrice())) + " \n\t-- Servidor Leiloado:" + (String.valueOf(server.isInAuction())) + "\n\n";
-                        }
-                    }
-                    break;
-                case "4":
-                    for (Servers server : catalogue_list) {
-                        if (server.getUserEmail().equals(myEmail)) {
-                            response = "Id da Reserva: " + server.getIdServers() + " \n\t-- Tipo: " + server.getType() + " \n\t-- Preço nominal:" + (String.valueOf(server.getNominalPrice())) + " \n\t-- Preço indicado:" + (String.valueOf(server.getActualPrice())) + "\nMinutos ativo: " + (String.valueOf(server.getMinutes())) + "\nTotal a pagar: " + (String.valueOf(server.getCurrentTotal())) + "\n\n";
-                        }
-                    }
-                    break;
-                case "5":
-                    for (Servers server : catalogue_list) {
-                        if (server.getType().equals("large.5k")) {
-                            response = "Id do Servidor: " + server.getIdServers() + " \n\t-- Tipo: " + server.getType() + " \n\t-- Preço nominal:" + (String.valueOf(server.getNominalPrice())) + " \n\t-- Preço indicado:" + (String.valueOf(server.getActualPrice())) + " \n\t-- Servidor Ocupado:" + (String.valueOf(server.isOccupied())) + " \n\t-- Servidor Leiloado:" + (String.valueOf(server.isInAuction())) + "\n\n";
-                        }
-                    }
-                    break;
-                case "6":
-                    for (Servers server : catalogue_list) {
-                        if (server.getType().equals("small.1k")) {
-                            response = "Id do Servidor: " + server.getIdServers() + " \n\t-- Tipo: " + server.getType() + " \n\t-- Preço nominal:" + (String.valueOf(server.getNominalPrice())) + " \n\t-- Preço indicado:" + (String.valueOf(server.getActualPrice())) + " \n\t-- Servidor Ocupado:" + (String.valueOf(server.isOccupied())) + " \n\t-- Servidor Leiloado:" + (String.valueOf(server.isInAuction())) + "\n\n";
-                        }
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-            return response;
-        }*/
-
         private String request_Server() throws IOException{
             this.sendMessage(listFreeServers());
             this.sendMessage("\n1 - Reservar servidor pelo preço nominal \n2 - Propor oferta de preço em leilão");
@@ -244,6 +193,7 @@ public class Server {
                     requested.reset();
                     requested.setOccupied(true);
                     requested.setUserEmail(myEmail);
+                    requested.startServer();
                     writers.writeMessage(oldUserMail, "Lamentamos, mas a reserva que obteve em leilão, cuja identificação é: " + requested.getIdServers()
                             + " teve de ser cedida para uma reserva pelo preço nominal, por falta de disponibilidade de servidores.");
                     return "Este é o identificador da reserva: " + requested.getIdServers() + "\n";
@@ -333,9 +283,9 @@ public class Server {
                     else
                         price = server.getNominalPrice();
                     sb.append("Id da Reserva: ").append(server.getIdServers());
-                    sb.append(" \n\t-- Tipo: ").append(server.getType());
-                    sb.append(" \n\t-- Preço Por hora:").append(price);
-                    sb.append("\nMinutos ativo: ").append(server.getMinutes());
+                    sb.append(" \n\t Tipo: ").append(server.getType());
+                    sb.append(" \n\t Preço Por hora:").append(price);
+                    sb.append("\nHoras ativo: ").append(server.getMinutes());
                     sb.append("\nTotal a pagar: ").append(server.getCurrentTotal());
                     sb.append("\n\n");
                 }
@@ -351,7 +301,7 @@ public class Server {
             for (String type : typeList) {
 
                 sb.append("\t").append(type).append(": ").append(catalogue.nFreeServers(type));
-                sb.append("\n\t-- Preço nominal: ").append(catalogue.getNominalPrice(type));
+                sb.append("\n\t Preço nominal: ").append(catalogue.getNominalPrice(type));
                 sb.append("\n");
             }
             return sb.toString();
@@ -485,8 +435,8 @@ public class Server {
                     }
                 }
                 sendMessage("exit");
+                this.join();
             } catch (Exception e) {
-                System.out.println("ups... ocorreu um erro, sei lá qual");
                 System.out.println(e);
             }
         }
