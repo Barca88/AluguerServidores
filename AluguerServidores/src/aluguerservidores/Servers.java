@@ -8,65 +8,65 @@ public class Servers extends Thread {
 
     String id;
     private String type;
-    private float nominal_price;
-    private float indic_price;
+    private float nominalPrice;
+    private float actualPrice;
     private float minutes;
     private boolean occupied;
-    private boolean auctioned;
-    private String user_email;
+    private boolean inAuction;
     private boolean boughtInAuction;
     private boolean firstTime;
+    private String userEmail;
 
     public Servers(String type, float n_price, float i_price, boolean auct, String user) throws NoSuchAlgorithmException {
-        this.id = this.create_id();
+        this.id = this.createId();
         this.type = type;
-        this.nominal_price = n_price;
-        this.indic_price = i_price;
+        this.nominalPrice = n_price;
+        this.actualPrice = i_price;
         this.minutes = 0;
-        this.user_email = user;
+        this.userEmail = user;
         this.occupied = true;
-        this.auctioned = auct;
+        this.inAuction = auct;
         this.boughtInAuction = false;
         this.firstTime = true;
     }
 
     public Servers(String type, float n_price) throws NoSuchAlgorithmException {
-        this.id = this.create_id();
+        this.id = this.createId();
         this.type = type;
-        this.nominal_price = n_price;
-        this.indic_price = 0;
+        this.nominalPrice = n_price;
+        this.actualPrice = 0;
         this.minutes = 0;
         this.occupied = false;
-        this.auctioned = false;
-        this.user_email = "";
+        this.inAuction = false;
+        this.userEmail = "";
         this.boughtInAuction = false;
     }
 
-    public synchronized void set_minutes(float m) {
+    public synchronized void setMinutes(float m) {
         this.minutes = m;
     }
 
-    public synchronized float get_minutes() {
+    public synchronized float getMin() {
         return this.minutes;
     }
 
     public synchronized float getCurrentTotal() {
         if (boughtInAuction) {
-            return this.minutes * this.indic_price;
+            return this.minutes * this.actualPrice;
         } else {
-            return this.minutes * this.nominal_price;
+            return this.minutes * this.nominalPrice;
         }
     }
 
-    public synchronized void setUser_email(String x) {
-        this.user_email = x;
+    public synchronized void setUserEmail(String x) {
+        this.userEmail = x;
     }
 
-    public synchronized String getUser_email() {
-        return this.user_email;
+    public synchronized String getUserEmail() {
+        return this.userEmail;
     }
 
-    public synchronized void inc_minutes() {
+    public synchronized void incMinutes() {
         this.minutes++;
     }
 
@@ -82,46 +82,42 @@ public class Servers extends Thread {
         return boughtInAuction;
     }
 
-    public synchronized void set_type(String type) {
+    public synchronized void setType(String type) {
         this.type = type;
     }
 
-    public synchronized String get_type() {
+    public synchronized String getType() {
         return this.type;
     }
 
-    public synchronized String get_id() {
+    public synchronized String getIdServers() {
         return this.id;
     }
 
-    public synchronized void set_id(String id) {
-        this.id = id;
-    }
-
-    public synchronized String create_id() throws NoSuchAlgorithmException {
+    public synchronized String createId() throws NoSuchAlgorithmException {
         Random r = new Random();
         String pk = "SLKNGLRKJBHTGLJRTHEBLE" + Integer.toString(r.nextInt(50000));
         String myHash = Base64.getEncoder().encodeToString(pk.getBytes());
         return myHash;
     }
 
-    public synchronized float getNominal_price() {
-        return this.nominal_price;
+    public synchronized float getNominalPrice() {
+        return this.nominalPrice;
     }
 
-    public synchronized void setNominal_price(float x) {
-        this.nominal_price = x;
+    public synchronized void setNominalPrice(float x) {
+        this.nominalPrice = x;
     }
 
-    public synchronized float getIndic_price() {
-        return this.indic_price;
+    public synchronized float getIndicPrice() {
+        return this.actualPrice;
     }
 
-    public synchronized void setIndic_price(float x) {
-        this.indic_price = x;
+    public synchronized void setIndicPrice(float x) {
+        this.actualPrice = x;
     }
 
-    public synchronized void set_occupied(boolean x) {
+    public synchronized void setOccupied(boolean x) {
         this.occupied = x;
     }
 
@@ -129,12 +125,12 @@ public class Servers extends Thread {
         return this.occupied;
     }
 
-    public synchronized void set_auctioned(boolean x) {
-        this.auctioned = x;
+    public synchronized void setAuctioned(boolean x) {
+        this.inAuction = x;
     }
 
-    public synchronized boolean isAuctioned() {
-        return this.auctioned;
+    public synchronized boolean isInAuction() {
+        return this.inAuction;
     }
 
     public synchronized Servers clone() {
@@ -143,10 +139,11 @@ public class Servers extends Thread {
 
     public synchronized void reset() {
         this.indic_price = 0;
+        this.actualPrice = 0;
         this.minutes = 0;
         this.occupied = false;
-        this.auctioned = false;
-        this.user_email = "";
+        this.inAuction = false;
+        this.userEmail = "";
         this.boughtInAuction = false;
     }
 
