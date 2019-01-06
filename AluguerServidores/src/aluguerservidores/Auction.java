@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package aluguerservidores;
 
 import java.io.BufferedWriter;
@@ -64,7 +59,7 @@ public class Auction extends Thread {
             sendMessage(s, user);
         }
     }
-    
+
     public synchronized void sendWinnerMessage(){
         for(String user : participants){
             if(user.equals(currentHighestBidder))
@@ -77,7 +72,7 @@ public class Auction extends Thread {
     public synchronized void sendBidMessage() {
         sendGeneralMessage("Oferta mais alta: " + this.highestBid + "\nMaior licitador: " + getCurrentHighestBidder() + "\nFaça uma proposta: ");
     }
-    
+
     public synchronized float getHighestBid(){
         return highestBid;
     }
@@ -90,7 +85,7 @@ public class Auction extends Thread {
         this.finished = cause;
         notify();
     }
-    
+
     public synchronized boolean isFinished(){
         return finished > 0;
     }
@@ -99,12 +94,12 @@ public class Auction extends Thread {
         Servers server;
         switch (this.finished) {
             case 1:
-                server = catalogue.findAvailableServerOfType(type);
+                server = catalogue.getAvailableServer(type);
                 if (server != null && !currentHighestBidder.equals("")) {
                     server.setOccupied(true);
                     server.setUserEmail(currentHighestBidder);
                     server.setBoughtInAuction(true);
-                    server.setIndicPrice(highestBid);
+                    server.setActualPrice(highestBid);
                     server.startServer();
                     this.sendWinnerMessage();
                 } else {
@@ -112,12 +107,12 @@ public class Auction extends Thread {
                 }
                 break;
             case 2:
-                server = catalogue.findAvailableServerOfType(type);
+                server = catalogue.getAvailableServer(type);
                 if (server != null) {
                     server.setOccupied(true);
                     server.setUserEmail(currentHighestBidder);
                     server.setBoughtInAuction(true);
-                    server.setIndicPrice(serverPrice);
+                    server.setActualPrice(serverPrice);
                     server.startServer();
                     this.sendWinnerMessage();
                 } else {
@@ -130,12 +125,12 @@ public class Auction extends Thread {
             default:
                 break;
         }
-            this.manager.removeAuction(type);
-            try{
-                this.join();
-            } catch(InterruptedException e){
-                e.printStackTrace();
-            }
+        this.manager.removeAuction(type);
+        try{
+            this.join();
+        } catch(InterruptedException e){
+            e.printStackTrace();
+        }
     }
 
     public synchronized void bid(String user, float price) {

@@ -112,11 +112,11 @@ public class Servers extends Thread {
         this.nominalPrice = x;
     }
 
-    public synchronized float getIndicPrice() {
+    public synchronized float getActualPrice() {
         return this.actualPrice;
     }
 
-    public synchronized void setIndicPrice(float x) {
+    public synchronized void setActualPrice(float x) {
         this.actualPrice = x;
     }
 
