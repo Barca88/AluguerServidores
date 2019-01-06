@@ -138,8 +138,8 @@ public class Server {
 
         private String listCatalogue(){
             StringBuilder sb = new StringBuilder();
-            sb.append("Servidores livres:\n").append(listFreeServers());
-            sb.append("Servidores Ocupados:\n").append(listOccupiedServers());
+            sb.append("\tServidores livres:\n").append(listFreeServers());
+            sb.append("\tServidores Ocupados:\n").append(listOccupiedServers());
             return sb.toString();
         }
 
@@ -321,8 +321,6 @@ public class Server {
             return ("\n");
         }
 
-
-
         private String listMyServers() {
             ArrayList<Servers> catalogue_list = catalogue.makeServerList();
             StringBuilder sb = new StringBuilder();
@@ -344,7 +342,6 @@ public class Server {
             }
             return sb.toString();
         }
-
 
         private String listFreeServers() {
             StringBuilder sb = new StringBuilder();
