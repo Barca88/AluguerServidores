@@ -24,6 +24,7 @@ public class Server {
     private MyQueue queue;
     private WriterMap writers;
     private Lock accountsLock;
+    private Leiloes auctions;
 
     public Server() throws IOException, NoSuchAlgorithmException {
         this.serverSocket = new ServerSocket(12345);
@@ -34,7 +35,7 @@ public class Server {
         this.catalogue = new Catalogue();
         this.writers = new WriterMap();
         this.queue = new MyQueue(catalogue.getTypes());
-
+        this.auctions = new Leiloes();
     }
 
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
@@ -42,17 +43,13 @@ public class Server {
         servidor.getInput();
     }
 
-    private void getInput() throws IOException {
+    private void getInput(){
         while (true) {
             try {
                 Socket clSocket = serverSocket.accept();
                 ServerThread st = new ServerThread(clSocket);
                 this.clients.add(st);
                 st.start();
-                /*System.out.println("ClientThread " + st.getId() + "started\n");
-                st.join();
-                this.clients.remove(st);
-                System.out.println("ClientThread " + st.getId() + "finished\n");*/
             } catch (Exception e) {
             }
         }
@@ -182,7 +179,7 @@ public class Server {
             return response;
         }
 
-        private String request_Server() throws IOException, InterruptedException {
+        private String request_Server() throws IOException {
             this.sendMessage(listFreeServers());
             this.sendMessage("\n1 - Reservar servidor pelo preço nominal \n2 - Propor oferta de preço em leilão");
             String answer = input.readLine();
@@ -200,7 +197,7 @@ public class Server {
             return response;
         }
 
-        private String rentServer() throws IOException, InterruptedException {
+        private String rentServer() throws IOException {
             ArrayList<String> typeList = catalogue.getTypes();
             String message = "";
             int i = 1;
@@ -292,24 +289,84 @@ public class Server {
 
             if (nFreeServers(serverType) <= 0) {
                 return "Não há servidores disponíveis do tipo pretendido\n";
-            } else {
-                this.sendMessage("Última oferta: " + catalogue.getBidPrice(serverType));
-                answer = input.readLine();
-                float price = Float.parseFloat(answer);
-                if (price > catalogue.getBidPrice(serverType)) {
-                    this.sendMessage("Parabéns! Ganhou o leilão!");
-                    Servers requested = catalogue.findAvailableServerOfType(serverType);
-                    if (requested == null) {
-                        return "Lamentamos, mas entretanto todos os servidores desse tipo foram alugados";
-                    } else {
-                        requested.reset();
-                        requested.setOccupied(true);
-                        requested.setBoughtInAuction(true);
-                        requested.setUserEmail(myEmail);
-                        return "Este é o identificador da reserva: " + requested.getIdServers() + "\n";
+            }
+            else {
+                Leilao auction = auctions.getLeilao(serverType);
+                if (auction != null) {
+                    this.sendMessage("Oferta máxima: " + auction.get_bidLimit());
+                    auction.add_write(this.myEmail, this.output);
+                    float price=0.0f;
+                    while (auctions.containsLeilao(auction) == true) {
+                        if (auction.get_bid()!= price) {
+                            this.sendMessage("Última oferta: " + auction.get_bid());
+                            answer = input.readLine();
+                            price = Float.parseFloat(answer);
+                            if (price == auction.get_bidLimit()) {
+                                auction.set_bid(auction.get_bidLimit());
+                                auction.setMaxbid_user(this.myEmail);
+                                auction.endLeilao();
+                                Servers requested = catalogue.findAvailableServerOfType(serverType);
+                                if (requested == null) {
+                                    return "Lamentamos, mas entretanto todos os servidores desse tipo foram alugados";
+                                } else {
+                                    requested.reset();
+                                    requested.setOccupied(true);
+                                    requested.setBoughtInAuction(true);
+                                    requested.setUserEmail(myEmail);
+                                    return "Este é o identificador da reserva: " + requested.getIdServers() + "\n";
+                                }
+                            } else {
+                                if (price > auction.get_bid() && price < auction.get_bidLimit()) {
+                                    auction.new_bid(price, this.myEmail);
+                                    this.sendMessage("A sua oferta é a maior de momento!");
+                                }else{
+                                    this.sendMessage("Por favor faça uma oferta válida!");
+                                    this.sendMessage("Oferta máxima: " + auction.get_bidLimit());
+                                    this.sendMessage("Última oferta: " + auction.get_bid());
+                                }
+                            }
+                        }
                     }
-                } else {
-                    return ("Última oferta: " + catalogue.getBidPrice(serverType));
+                    return "Lamentamos, mas perdeu o Leilão.";
+                } else{
+                    auction =  new Leilao(serverType);
+                    auctions.add_leilao(auction);
+                    this.sendMessage("Oferta máxima: " + auction.get_bidLimit());
+                    this.sendMessage("Última oferta: " + auction.get_bid());
+                    auction.add_write(this.myEmail, this.output);
+                    float price=0.0f;
+                    while (auctions.containsLeilao(auction) == true) {
+                        if (auction.getMaxbid_user() != this.myEmail) {
+                            //System.out.println("LALALLA");
+                            answer = input.readLine();
+                            price = Float.parseFloat(answer);
+                            if (price == auction.get_bidLimit()) {
+                                auction.set_bid(auction.get_bidLimit());
+                                auction.setMaxbid_user(this.myEmail);
+                                auction.endLeilao();
+                                Servers requested = catalogue.findAvailableServerOfType(serverType);
+                                if (requested == null) {
+                                    return "Lamentamos, mas entretanto todos os servidores desse tipo foram alugados";
+                                } else {
+                                    requested.reset();
+                                    requested.setOccupied(true);
+                                    requested.setBoughtInAuction(true);
+                                    requested.setUserEmail(myEmail);
+                                    return "Este é o identificador da reserva: " + requested.getIdServers() + "\n";
+                                }
+                            } else {
+                                if (price > auction.get_bid() && price < auction.get_bidLimit()) {
+                                    auction.new_bid(price, this.myEmail);
+                                    this.sendMessage("A sua oferta é a maior de momento!");
+                                }else{
+                                    this.sendMessage("Por favor faça uma oferta válida!");
+                                    this.sendMessage("Oferta máxima: " + auction.get_bidLimit());
+                                    this.sendMessage("Última oferta: " + auction.get_bid());
+                                }
+                            }
+                        }
+                    }
+                    return "Lamentamos, mas perdeu o Leilão.";
                 }
             }
         }
@@ -451,7 +508,6 @@ public class Server {
             return 0;
         }
 
-        @Override
         public void run() {
             try {
                 int phase = 0;

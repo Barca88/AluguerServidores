@@ -9,10 +9,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.HashMap;
 
-/**
- *
- * @author quim
- */
+
 public class WriterMap {
 
     private HashMap<String, BufferedWriter> writers;
@@ -29,7 +26,7 @@ public class WriterMap {
         this.writers.remove(s);
     }
 
-    public synchronized void writeMessage(String id, String message) throws IOException {
+    public synchronized void writeMessage(String id, String message) {
         if (this.writers.get(id) != null) {
             try {
                 this.writers.get(id).write(message);
@@ -37,5 +34,36 @@ public class WriterMap {
             } catch (IOException ex) {
             }
         }
+    }
+
+    public synchronized void writeBid(String id, String message){
+        this.writers.forEach((k,v)->{
+            if(k !=id){
+                try {
+                    v.write(message + "\n");
+                    v.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+    public synchronized void writeWinner(String id, String message){
+        this.writers.forEach((k,v)->{
+            if(k==id){
+                try {
+                    v.write("Ganhou o Leilão, Parabéns!");
+                    v.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                v.write(message);
+                v.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }
