@@ -36,6 +36,7 @@ public class Auction extends Thread {
         this.type = type;
         this.highestBid = 0;
         this.manager = manager;
+        this.currentHighestBidder = "";
     }
 
     public synchronized void addParticipant(String s, BufferedWriter b) {
@@ -74,11 +75,15 @@ public class Auction extends Thread {
     }
 
     public synchronized void sendBidMessage() {
-        sendGeneralMessage("Oferta mais alta: " + this.highestBid + "\nFaça uma proposta: ");
+        sendGeneralMessage("Oferta mais alta: " + this.highestBid + "\nMaior licitador: " + getCurrentHighestBidder() + "\nFaça uma proposta: ");
     }
     
     public synchronized float getHighestBid(){
         return highestBid;
+    }
+
+    public String getCurrentHighestBidder() {
+        return currentHighestBidder;
     }
 
     public synchronized void terminate(int cause) {
@@ -95,7 +100,7 @@ public class Auction extends Thread {
         switch (this.finished) {
             case 1:
                 server = catalogue.findAvailableServerOfType(type);
-                if (server != null) {
+                if (server != null && !currentHighestBidder.equals("")) {
                     server.set_occupied(true);
                     server.setUser_email(currentHighestBidder);
                     server.setBoughtInAuction(true);

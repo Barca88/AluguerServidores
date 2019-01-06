@@ -279,7 +279,14 @@ public class Server {
 
             while (!auction.isFinished()) {
                 answer = input.readLine();
-                if (!auction.isFinished()) {
+                if (answer.equals("quit")) {
+                    if (auction.getCurrentHighestBidder().equals(myEmail)) {
+                        sendMessage("Não pode sair do leilão dado que é o atual maior licitador");
+                    } else {
+                        auction.removeParticipant(myEmail);
+                        return "Saiu do leilão";
+                    }
+                } else if (!auction.isFinished()) {
                     try {
                         n = Integer.parseInt(answer);
                         auction.bid(myEmail, n);
