@@ -10,8 +10,9 @@ import java.io.IOException;
 import java.util.HashMap;
 
 /**
- *
- * @author quim
+ * Classs Utilizada para Guardar os BufferedWriters dos clientes
+ * para que seja possivel establecer a comunicação do servidor
+ * com o cliente
  */
 public class WriterMap {
 

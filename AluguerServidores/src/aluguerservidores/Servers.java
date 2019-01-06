@@ -4,6 +4,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Random;
 
+/**
+ * A class Servrs Representa os servidores que vamos alugar
+ */
 public class Servers extends Thread {
 
     String id;
@@ -138,7 +141,7 @@ public class Servers extends Thread {
     }
 
     public synchronized void reset() {
-        this.indic_price = 0;
+        this.nominalPrice = 0;
         this.actualPrice = 0;
         this.minutes = 0;
         this.occupied = false;
@@ -173,7 +176,7 @@ public class Servers extends Thread {
                     e.printStackTrace();
                 }
                 if (isOccupied() == true) {
-                    inc_minutes();
+                    incMinutes();
                 }
             }
             standBy();

@@ -14,6 +14,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Classe servidor que recebe os clientes que sao criados pela AluguerServidores
+ */
 public class Server {
 
     private final ServerSocket serverSocket;
@@ -263,10 +266,10 @@ public class Server {
                     */
                 }
             } else {
-                requested.set_occupied(true);
-                requested.setUser_email(myEmail);
+                requested.setOccupied(true);
+                requested.setUserEmail(myEmail);
                 requested.startServer();
-                return "Este é o identificador da reserva: " + requested.get_id() + "\n";
+                return "Este é o identificador da reserva: " + requested.getIdServers() + "\n";
             }
         }
 
@@ -338,8 +341,8 @@ public class Server {
             ArrayList<Servers> catalogue_list = catalogue.makeServerList();
             String response = "";
             for (Servers server : catalogue_list) {
-                if (server.getUser_email().equals(myEmail)) {
-                    response = response + "Id da Reserva: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndic_price()))) + "\nMinutos ativo: " + (new String(String.valueOf(server.getMinutes()))) + "\nTotal a pagar: " + (new String(String.valueOf(server.getCurrentTotal()))) + "\n\n";
+                if (server.getUserEmail().equals(myEmail)) {
+                    response = response + "Id da Reserva: " + server.getIdServers() + " \n\t-- Tipo: " + server.getType() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominalPrice()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndicPrice()))) + "\nMinutos ativo: " + (new String(String.valueOf(server.getMinutes()))) + "\nTotal a pagar: " + (new String(String.valueOf(server.getCurrentTotal()))) + "\n\n";
                 }
             }
             return response;
@@ -380,7 +383,7 @@ public class Server {
                 if (server.isOccupied()) {
                     i = 0;
                     for (String type : typeList) {
-                        if (server.get_type().equals(type)) {
+                        if (server.getType().equals(type)) {
                             ntype[i]++;
                         }
                         i++;
