@@ -64,7 +64,6 @@ public class MyQueue extends Thread {
                         server.setUserEmail(user);
                         server.startServer();
                         writers.writeMessage(user, "Quem espera sempre alcança! Um servidor foi libertado e reservado para si. Este é o identificador da reserva: " + server.getIdServers() + "\n");
-                        writers.remove(user);
                     } else {
                         server.setOccupied(false);
                     }
@@ -77,11 +76,11 @@ public class MyQueue extends Thread {
             System.out.println("ta tudo");
         }*/
     public synchronized void standBy() throws InterruptedException {
-        wait();
+        this.wait();
     }
 
     public synchronized void signal() {
-        notify();
+        this.notify();
     }
 
     public void run() {

@@ -158,10 +158,8 @@ public class Servers extends Thread {
 
     public void run() {
         while (true) {
-            System.out.println("grego");
             while (isOccupied()) {
                 try {
-                    System.out.println("grego");
                     sleep(6000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
