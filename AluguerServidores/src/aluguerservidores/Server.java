@@ -314,11 +314,16 @@ public class Server {
 
         private String listMyServers() {
             ArrayList<Servers> catalogue_list = catalogue.makeServerList();
+            float price;
             String response = "";
             for (Servers server : catalogue_list) {
                 if (server.getUserEmail().equals(myEmail)) {
-                    response = response + "Id da Reserva: " + server.getIdServers() + " \n\t-- Tipo: " + server.getType() + " \n\t-- Preço nominal:" + server.getNominalPrice() + " \n\t-- Preço indicado:" 
-                            + server.getActualPrice() + "\nMinutos ativo: " + server.getMinutes() + "\nTotal a pagar: " + server.getCurrentTotal() + "\n\n";
+                    if(server.wasBoughtInAuction())
+                        price = server.getActualPrice();
+                    else
+                        price = server.getNominalPrice();
+                    response = response + "Id da Reserva: " + server.getIdServers() + " \n\t-- Preço por hora:" 
+                            + price + "\nMinutos ativo: " + server.getMinutes() + "\nTotal a pagar: " + server.getCurrentTotal() + "\n\n";
                 }
             }
             return response;

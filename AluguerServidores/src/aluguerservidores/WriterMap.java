@@ -33,6 +33,7 @@ public class WriterMap {
         if (this.writers.get(id) != null) {
             try {
                 this.writers.get(id).write(message);
+                this.writers.get(id).newLine();
                 this.writers.get(id).flush();
             } catch (IOException ex) {
             }
