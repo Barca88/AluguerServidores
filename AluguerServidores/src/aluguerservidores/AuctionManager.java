@@ -41,7 +41,7 @@ public class AuctionManager extends Thread {
         }
         timers.put(type, 0);
         hasActiveAuctions = true;
-        notify();
+        this.notify();
     }
     
     public synchronized void removeAuction(String type) {
@@ -74,7 +74,7 @@ public class AuctionManager extends Thread {
                 createAuction(type);
                 auctions.get(type).addParticipant(user, b);
             }
-            sendMessage(b, "Entrou no Leilão. Escreva o comando \"quit\" para sair. \n Faltam " + (maxTime - timers.get(type)) + " segundos para terminar");
+            sendMessage(b, "Entrou no Leilão. Escreva o comando \"quit\" para sair. \nFaltam " + (maxTime - timers.get(type)) + " segundos para terminar");
             return auctions.get(type);
         } else {
             sendMessage(b, "Não existem servidores do tipo pretendido\n");

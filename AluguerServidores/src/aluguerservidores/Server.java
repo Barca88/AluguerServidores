@@ -132,7 +132,7 @@ public class Server {
         }
 
         private String listCatalogue() throws IOException {
-            String response = "Servidores livres:\n" + listFreeServers() + "Servidores Ocupados:\n" + listOccupiedServers();
+            String response = listFreeServers() + listOccupiedServers();
             return response;
         }
 
@@ -326,7 +326,7 @@ public class Server {
         }
 
         private String listFreeServers() {
-            String response = "";
+            String response = "Servidores livres:\n";
             ArrayList<Servers> catalogue_list = catalogue.makeServerList();
             ArrayList<String> typeList = catalogue.getTypes();
             int[] ntype = new int[typeList.size()];
@@ -351,7 +351,7 @@ public class Server {
         }
 
         private String listOccupiedServers() {
-            String response = "";
+            String response = "Servidores Ocupados:\n";
             ArrayList<Servers> catalogue_list = catalogue.makeServerList();
             ArrayList<String> typeList = catalogue.getTypes();
             int[] ntype = new int[typeList.size()];
