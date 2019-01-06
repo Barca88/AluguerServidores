@@ -29,7 +29,7 @@ public class WriterMap {
         this.writers.remove(s);
     }
 
-    public synchronized void writeMessage(String id, String message) throws IOException {
+    public synchronized void writeMessage(String id, String message) {
         if (this.writers.get(id) != null) {
             try {
                 this.writers.get(id).write(message);

@@ -34,8 +34,8 @@ public class Server {
         this.loggedIn = new EmailList();
         this.catalogue = new Catalogue();
         this.writers = new WriterMap();
-        this.auctionManager = new AuctionManager(catalogue);
-        this.queue = new MyQueue(catalogue);
+        this.auctionManager = new AuctionManager(catalogue, writers);
+        this.queue = new MyQueue(catalogue, writers);
     }
 
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
@@ -287,7 +287,7 @@ public class Server {
 
             serverType = typeList.get(n - 1);
 
-            Auction auction = auctionManager.joinAuction(myEmail, serverType, output);
+            Auction auction = auctionManager.joinAuction(myEmail, serverType);
 
             while (!auction.isFinished()) {
                 answer = input.readLine();

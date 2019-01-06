@@ -18,22 +18,24 @@ public class AuctionManager extends Thread {
     
     private HashMap<String, Auction> auctions;
     private HashMap<String, Integer> timers;
+    private WriterMap writers;
     private ArrayList<String> types;
     private Catalogue catalogue;
     private boolean hasActiveAuctions;
     private final int maxTime;
     
-    public AuctionManager(Catalogue c) {
+    public AuctionManager(Catalogue c, WriterMap w) {
         this.auctions = new HashMap<>();
         this.timers = new HashMap<>();
         this.types = new ArrayList<>();
         this.catalogue = c;
         this.hasActiveAuctions = false;
         this.maxTime = 30;
+        this.writers = w;
     }
     
-    public synchronized void createAuction(String type) {
-        Auction auction = new Auction(catalogue, type, this);
+    public synchronized void createAuction(String type, WriterMap writers) {
+        Auction auction = new Auction(catalogue, type, this, writers);
         auction.start();
         this.auctions.put(type, auction);
         if (!this.types.contains(type)) {
@@ -66,18 +68,18 @@ public class AuctionManager extends Thread {
     }
     
     
-    public synchronized Auction joinAuction(String user, String type, BufferedWriter b) {
+    public synchronized Auction joinAuction(String user, String type) {
         if (catalogue.containsType(type)) {
             if (auctions.containsKey(type)) {
-                auctions.get(type).addParticipant(user, b);
+                auctions.get(type).addParticipant(user);
             } else {
-                createAuction(type);
-                auctions.get(type).addParticipant(user, b);
+                createAuction(type, writers);
+                auctions.get(type).addParticipant(user);
             }
-            sendMessage(b, "Entrou no Leilão. Escreva o comando \"quit\" para sair. \nFaltam " + (maxTime - timers.get(type)) + " segundos para terminar");
+            writers.writeMessage(user, "Entrou no Leilão. Escreva o comando \"quit\" para sair. \nFaltam " + (maxTime - timers.get(type)) + " segundos para terminar");
             return auctions.get(type);
         } else {
-            sendMessage(b, "Não existem servidores do tipo pretendido\n");
+            writers.writeMessage(user, "Não existem servidores do tipo pretendido\n");
             return null;
         }
     }

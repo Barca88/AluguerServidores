@@ -16,8 +16,8 @@ import java.util.HashMap;
  */
 public class Auction extends Thread {
 
-    private HashMap<String, BufferedWriter> writers;
-    ArrayList<String> participants;
+    private WriterMap writers;
+    private ArrayList<String> participants;
     private Catalogue catalogue;
     private String type;
     private float highestBid;
@@ -27,8 +27,8 @@ public class Auction extends Thread {
     private int finished;
     AuctionManager manager;
 
-    public Auction(Catalogue c, String type, AuctionManager manager) {
-        this.writers = new HashMap<>();
+    public Auction(Catalogue c, String type, AuctionManager manager, WriterMap writers) {
+        this.writers = writers;
         this.participants = new ArrayList<>();
         this.catalogue = c;
         this.serverPrice = this.catalogue.getNominalPrice(type);
@@ -39,8 +39,7 @@ public class Auction extends Thread {
         this.currentHighestBidder = "";
     }
 
-    public synchronized void addParticipant(String s, BufferedWriter b) {
-        this.writers.put(s, b);
+    public synchronized void addParticipant(String s) {
         this.participants.add(s);
     }
 
@@ -49,14 +48,8 @@ public class Auction extends Thread {
         this.participants.remove(s);
     }
 
-    public synchronized void sendMessage(String s, String user) {
-        BufferedWriter output = this.writers.get(user);
-        try {
-            output.write(s);
-            output.newLine();
-            output.flush();
-        } catch (IOException ex) {
-        }
+    public synchronized void sendMessage(String s, String user){
+        this.writers.writeMessage(user, s);
     }
 
     public synchronized void sendGeneralMessage(String s) {
