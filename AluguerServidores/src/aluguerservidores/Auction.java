@@ -39,7 +39,6 @@ public class Auction extends Thread {
     }
 
     public synchronized void removeParticipant(String s) {
-        this.writers.remove(s);
         this.participants.remove(s);
     }
 
