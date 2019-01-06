@@ -101,10 +101,10 @@ public class Auction extends Thread {
             case 1:
                 server = catalogue.findAvailableServerOfType(type);
                 if (server != null && !currentHighestBidder.equals("")) {
-                    server.set_occupied(true);
-                    server.setUser_email(currentHighestBidder);
+                    server.setOccupied(true);
+                    server.setUserEmail(currentHighestBidder);
                     server.setBoughtInAuction(true);
-                    server.setIndic_price(highestBid);
+                    server.setActualPrice(highestBid);
                     server.startServer();
                     this.sendWinnerMessage();
                 } else {
@@ -114,10 +114,10 @@ public class Auction extends Thread {
             case 2:
                 server = catalogue.findAvailableServerOfType(type);
                 if (server != null) {
-                    server.set_occupied(true);
-                    server.setUser_email(currentHighestBidder);
+                    server.setOccupied(true);
+                    server.setUserEmail(currentHighestBidder);
                     server.setBoughtInAuction(true);
-                    server.setIndic_price(serverPrice);
+                    server.setActualPrice(serverPrice);
                     server.startServer();
                     this.sendWinnerMessage();
                 } else {

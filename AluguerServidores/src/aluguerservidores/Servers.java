@@ -109,11 +109,11 @@ public class Servers extends Thread {
         this.nominalPrice = x;
     }
 
-    public synchronized float getIndicPrice() {
+    public synchronized float getActualPrice() {
         return this.actualPrice;
     }
 
-    public synchronized void setIndicPrice(float x) {
+    public synchronized void setActualPrice(float x) {
         this.actualPrice = x;
     }
 
@@ -138,7 +138,7 @@ public class Servers extends Thread {
     }
 
     public synchronized void reset() {
-        this.indic_price = 0;
+        this.actualPrice = 0;
         this.actualPrice = 0;
         this.minutes = 0;
         this.occupied = false;
@@ -173,7 +173,7 @@ public class Servers extends Thread {
                     e.printStackTrace();
                 }
                 if (isOccupied() == true) {
-                    inc_minutes();
+                    incMinutes();
                 }
             }
             standBy();
