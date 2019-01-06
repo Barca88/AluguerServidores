@@ -34,7 +34,7 @@ public class Server {
         this.loggedIn = new EmailList();
         this.catalogue = new Catalogue();
         this.writers = new WriterMap();
-        this.auctionManager = new AuctionManager(catalogue, 30);
+        this.auctionManager = new AuctionManager(catalogue);
     }
 
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
@@ -100,27 +100,26 @@ public class Server {
         }
 
         private int mainPage() throws IOException, InterruptedException {
+            ArrayList<Servers> catalogue_list = catalogue.makeServerList();
             int status = 0;
             String answer = "";
             while (status == 0) {
-                this.sendMessage("\n1 - Listar Catalogo \n2 - Reservar servidor \n3 - Pedir servidor em leilão \n4 - Libertar servidor \n5 - Ir para Leilão \n6 - Log Out");
+                this.sendMessage("\n1 - Listar Catálogo \n2 - Reservar servidor \n3 - Meus Servidores \n4 - Libertar servidor \n5 - Log Out");
                 answer = input.readLine();
                 switch (answer) {
                     case "1":
-                        this.sendMessage(this.list_catalogue());
+                        this.sendMessage(this.listCatalogue());
                         break;
                     case "2":
                         this.sendMessage(this.request_Server());
                         break;
                     case "3":
-
+                        this.sendMessage(this.listMyServers());
                         break;
                     case "4":
                         this.sendMessage(this.liberate_Server());
                         break;
                     case "5":
-                        break;
-                    case "6":
                         loggedIn.removeEmail(myEmail);
                         writers.remove(myEmail);
                         status = 1;
@@ -132,7 +131,12 @@ public class Server {
             return 0;
         }
 
-        private String list_catalogue() throws IOException {
+        private String listCatalogue() throws IOException {
+            String response = "Servidores livres:\n" + listFreeServers() + "Servidores Ocupados:\n" + listOccupiedServers();
+            return response;
+        }
+
+        /*private String list_catalogue() throws IOException {
             this.sendMessage("\n1 - Listar servidores livres \n2 - Listar servidores ocupados \n3 - Listar servidores para leilão \n4 - Listar servidores alugados por mim \n5 - Listar todos os servidores do tipo \"large.5k\" \n6 - Listar todos os servidores do tipo \"small.1k\"\n7- \"Para sair\"\n ");
             String answer = input.readLine();
             String response = "";
@@ -181,8 +185,7 @@ public class Server {
             }
 
             return response;
-        }
-
+        }*/
         private String request_Server() throws IOException, InterruptedException {
             this.sendMessage(listFreeServers());
             this.sendMessage("\n1 - Reservar servidor pelo preço nominal \n2 - Propor oferta de preço em leilão");
@@ -276,11 +279,13 @@ public class Server {
 
             while (!auction.isFinished()) {
                 answer = input.readLine();
-                try {
-                    n = Integer.parseInt(answer);
-                    auction.bid(myEmail, n);
-                } catch (Exception e) {
-                    sendMessage("Comando inválido\n");
+                if (!auction.isFinished()) {
+                    try {
+                        n = Integer.parseInt(answer);
+                        auction.bid(myEmail, n);
+                    } catch (Exception e) {
+                        sendMessage("Comando inválido\n");
+                    }
                 }
             }
             return ("\n");
@@ -302,6 +307,17 @@ public class Server {
             }
         }
 
+        private String listMyServers() {
+            ArrayList<Servers> catalogue_list = catalogue.makeServerList();
+            String response = "";
+            for (Servers server : catalogue_list) {
+                if (server.getUser_email().equals(myEmail)) {
+                    response = response + "Id da Reserva: " + server.get_id() + " \n\t-- Tipo: " + server.get_type() + " \n\t-- Preço nominal:" + (new String(String.valueOf(server.getNominal_price()))) + " \n\t-- Preço indicado:" + (new String(String.valueOf(server.getIndic_price()))) + "\nMinutos ativo: " + (new String(String.valueOf(server.getMinutes()))) + "\nTotal a pagar: " + (new String(String.valueOf(server.getCurrentTotal()))) + "\n\n";
+                }
+            }
+            return response;
+        }
+
         private String listFreeServers() {
             String response = "";
             ArrayList<Servers> catalogue_list = catalogue.makeServerList();
@@ -321,8 +337,32 @@ public class Server {
             }
             i = 0;
             for (String type : typeList) {
-                response += "Servidores do tipo " + type + ": " + ntype[i] + "\n\t-- Preço nominal: " + catalogue.getNominalPrice(type)
-                        + "\n";
+                response += "\t" + type + ": " + ntype[i] + "\n\t-- Preço nominal: " + catalogue.getNominalPrice(type) + "\n";
+                i++;
+            }
+            return response;
+        }
+
+        private String listOccupiedServers() {
+            String response = "";
+            ArrayList<Servers> catalogue_list = catalogue.makeServerList();
+            ArrayList<String> typeList = catalogue.getTypes();
+            int[] ntype = new int[typeList.size()];
+            int i;
+            for (Servers server : catalogue_list) {
+                if (server.isOccupied()) {
+                    i = 0;
+                    for (String type : typeList) {
+                        if (server.get_type().equals(type)) {
+                            ntype[i]++;
+                        }
+                        i++;
+                    }
+                }
+            }
+            i = 0;
+            for (String type : typeList) {
+                response += "\t" + type + ": " + ntype[i] + "\n";
                 i++;
             }
             return response;

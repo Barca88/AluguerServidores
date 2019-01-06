@@ -63,6 +63,15 @@ public class Auction extends Thread {
             sendMessage(s, user);
         }
     }
+    
+    public synchronized void sendWinnerMessage(){
+        for(String user : participants){
+            if(user.equals(currentHighestBidder))
+                sendMessage("Ganhou o leilão!", user);
+            else
+                sendMessage("Acabou o tempo. O vencedor é " + currentHighestBidder + "\n", user);
+        }
+    }
 
     public synchronized void sendBidMessage() {
         sendGeneralMessage("Oferta mais alta: " + this.highestBid + "\nFaça uma proposta: ");
@@ -92,7 +101,7 @@ public class Auction extends Thread {
                     server.setBoughtInAuction(true);
                     server.setIndic_price(highestBid);
                     server.startServer();
-                    this.sendGeneralMessage("Acabou o tempo. O vencedor é " + currentHighestBidder + "\n");
+                    this.sendWinnerMessage();
                 } else {
                     this.sendGeneralMessage("Deu-se o caso improvável de o último servidor disponível este tipo ter sido requisitado no último minuto...\n");
                 }
@@ -105,7 +114,7 @@ public class Auction extends Thread {
                     server.setBoughtInAuction(true);
                     server.setIndic_price(serverPrice);
                     server.startServer();
-                    this.sendGeneralMessage("O leilão acabou devido a uma oferta igual ou superior ao valor nominal do servidor. O vencedor é " + currentHighestBidder + "\n");
+                    this.sendWinnerMessage();
                 } else {
                     this.sendGeneralMessage("Lamentamos, mas o leilão foi cancelado dado que todos os servidores disponíveis deste tipo foram requisitados.\n");
                 }

@@ -23,13 +23,13 @@ public class AuctionManager extends Thread {
     private boolean hasActiveAuctions;
     private final int maxTime;
     
-    public AuctionManager(Catalogue c, int time) {
+    public AuctionManager(Catalogue c) {
         this.auctions = new HashMap<>();
         this.timers = new HashMap<>();
         this.types = new ArrayList<>();
         this.catalogue = c;
         this.hasActiveAuctions = false;
-        this.maxTime = time;
+        this.maxTime = 30;
     }
     
     public synchronized void createAuction(String type) {
@@ -74,8 +74,7 @@ public class AuctionManager extends Thread {
                 createAuction(type);
                 auctions.get(type).addParticipant(user, b);
             }
-            sendMessage(b, "Entrou no Leilão. \n"
-                    + "Oferta mais alta: " + auctions.get(type).getHighestBid() + "\nFaça uma proposta: ");
+            sendMessage(b, "Entrou no Leilão. \n");
             return auctions.get(type);
         } else {
             sendMessage(b, "Não existem servidores do tipo pretendido\n");
