@@ -21,13 +21,15 @@ public class AuctionManager extends Thread {
     private ArrayList<String> types;
     private Catalogue catalogue;
     private boolean hasActiveAuctions;
+    private final int maxTime;
     
-    public AuctionManager(Catalogue c) {
+    public AuctionManager(Catalogue c, int time) {
         this.auctions = new HashMap<>();
         this.timers = new HashMap<>();
         this.types = new ArrayList<>();
         this.catalogue = c;
         this.hasActiveAuctions = false;
+        this.maxTime = time;
     }
     
     public synchronized void createAuction(String type) {
@@ -93,7 +95,7 @@ public class AuctionManager extends Thread {
                     sleep(1000);
                     for (String type : this.types) {
                         if (timers.get(type) != null) {
-                            if (timers.get(type) >= 10) {
+                            if (timers.get(type) >= maxTime) {
                                 auctions.get(type).terminate(1);
                             } else {
                                 i = timers.get(type);

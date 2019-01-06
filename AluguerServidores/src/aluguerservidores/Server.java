@@ -34,7 +34,7 @@ public class Server {
         this.loggedIn = new EmailList();
         this.catalogue = new Catalogue();
         this.writers = new WriterMap();
-        this.auctionManager = new AuctionManager(catalogue);
+        this.auctionManager = new AuctionManager(catalogue, 30);
     }
 
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
