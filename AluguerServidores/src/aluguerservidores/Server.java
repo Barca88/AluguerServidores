@@ -24,6 +24,7 @@ public class Server {
     private Catalogue catalogue;
     private Lock accountsLock;
     private WriterMap writers;
+    private AuctionManager auctionManager;
 
     public Server() throws IOException, NoSuchAlgorithmException {
         this.serverSocket = new ServerSocket(12345);
@@ -33,6 +34,7 @@ public class Server {
         this.loggedIn = new EmailList();
         this.catalogue = new Catalogue();
         this.writers = new WriterMap();
+        this.auctionManager = new AuctionManager(catalogue);
     }
 
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
@@ -41,6 +43,7 @@ public class Server {
     }
 
     private void getInput() throws IOException {
+        auctionManager.start();
         while (true) {
             try {
                 Socket clSocket = serverSocket.accept();
@@ -239,7 +242,7 @@ public class Server {
             } else {
                 requested.set_occupied(true);
                 requested.setUser_email(myEmail);
-                requested.start();
+                requested.startServer();
                 return "Este é o identificador da reserva: " + requested.get_id() + "\n";
             }
         }
@@ -260,37 +263,27 @@ public class Server {
             try {
                 n = Integer.parseInt(answer);
             } catch (Exception e) {
-                return "Comando inválido";
+                return "Comando inválido\n";
             }
 
             if (n > typeList.size() || n < 0) {
-                return "Comando inválido";
+                return "Comando inválido\n";
             }
 
             serverType = typeList.get(n - 1);
 
-            if (nFreeServers(serverType) <= 0) {
-                return "Não há servidores disponíveis do tipo pretendido\n";
-            } else {
-                this.sendMessage("Última oferta: " + catalogue.getBidPrice(serverType));
+            Auction auction = auctionManager.joinAuction(myEmail, serverType, output);
+
+            while (!auction.isFinished()) {
                 answer = input.readLine();
-                float price = Float.parseFloat(answer);
-                if (price > catalogue.getBidPrice(serverType)) {
-                    this.sendMessage("Parabéns! Ganhou o leilão!");
-                    Servers requested = catalogue.findAvailableServerOfType(serverType);
-                    if (requested == null) {
-                        return "Lamentamos, mas entretanto todos os servidores desse tipo foram alugados";
-                    } else {
-                        requested.reset();
-                        requested.set_occupied(true);
-                        requested.setBoughtInAuction(true);
-                        requested.setUser_email(myEmail);
-                        return "Este é o identificador da reserva: " + requested.get_id() + "\n";
-                    }
-                } else {
-                    return ("Última oferta: " + catalogue.getBidPrice(serverType));
+                try {
+                    n = Integer.parseInt(answer);
+                    auction.bid(myEmail, n);
+                } catch (Exception e) {
+                    sendMessage("Comando inválido\n");
                 }
             }
+            return ("\n");
         }
 
         private int nFreeServers(String type) {
@@ -329,7 +322,7 @@ public class Server {
             i = 0;
             for (String type : typeList) {
                 response += "Servidores do tipo " + type + ": " + ntype[i] + "\n\t-- Preço nominal: " + catalogue.getNominalPrice(type)
-                        + "\n\t-- Oferta mais alta: " + catalogue.getBidPrice(type) + "\n";
+                        + "\n";
                 i++;
             }
             return response;

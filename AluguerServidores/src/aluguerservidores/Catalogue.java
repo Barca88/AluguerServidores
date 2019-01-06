@@ -70,6 +70,10 @@ public class Catalogue {
     public synchronized ArrayList<String> getTypes() {
         return types;
     }
+    
+    public synchronized boolean containsType(String type){
+        return this.types.contains(type);
+    }
 
     public synchronized boolean containsKey(String s) {
         return server_catalogue.containsKey(s);
@@ -95,4 +99,5 @@ public class Catalogue {
     public synchronized Servers get_Server(String id) {
         return this.server_catalogue.get(id);
     }
+
 }

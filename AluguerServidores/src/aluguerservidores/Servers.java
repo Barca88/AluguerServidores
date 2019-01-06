@@ -15,6 +15,7 @@ public class Servers extends Thread {
     private boolean auctioned;
     private String user_email;
     private boolean boughtInAuction;
+    private boolean firstTime;
 
     public Servers(String type, float n_price, float i_price, boolean auct, String user) throws NoSuchAlgorithmException {
         this.id = this.create_id();
@@ -26,6 +27,7 @@ public class Servers extends Thread {
         this.occupied = true;
         this.auctioned = auct;
         this.boughtInAuction = false;
+        this.firstTime = true;
     }
 
     public Servers(String type, float n_price) throws NoSuchAlgorithmException {
@@ -138,8 +140,8 @@ public class Servers extends Thread {
     public synchronized Servers clone() {
         return this.clone();
     }
-    
-    public synchronized void reset(){
+
+    public synchronized void reset() {
         this.indic_price = 0;
         this.minutes = 0;
         this.occupied = false;
@@ -148,16 +150,36 @@ public class Servers extends Thread {
         this.boughtInAuction = false;
     }
 
+    public synchronized void standBy() {
+        try {
+            this.wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized void startServer() {
+        if (firstTime) {
+            this.start();
+            firstTime = false;
+        } else {
+            this.notify();
+        }
+    }
+
     public void run() {
-        while (isOccupied() == true) {
-            try {
-                sleep(60000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        while (true) {
+            while (isOccupied() == true) {
+                try {
+                    sleep(6000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (isOccupied() == true) {
+                    inc_minutes();
+                }
             }
-            if (isOccupied() == true) {
-                inc_minutes();
-            }
+            standBy();
         }
     }
 }
