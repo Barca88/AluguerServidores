@@ -1,13 +1,11 @@
 package aluguerservidores;
 
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import static jdk.nashorn.internal.objects.NativeJava.type;
 
 public class MyQueue extends Thread {
 
